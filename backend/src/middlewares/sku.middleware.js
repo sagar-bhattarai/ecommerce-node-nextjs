@@ -1,37 +1,35 @@
 import mongoose from "mongoose";
 import SkuCounter from "../models/skuBasedProduct/SkuCounter.model.js";
 
+export const skuMiddleware = async function () {
 
-export const skuMiddleware = async function (next) {
-    if (this.internalSku && this.publicSku) return next();
+    if (this.internalSku && this.publicSku) return;
 
     try {
         const Category = mongoose.model("Category");
-        const Supplier = mongoose.model("Supplier");
+        const Supplier = mongoose.model("User");
 
         const category = await Category.findById(this.categoryId);
-        if (!category) return next(new Error("Category not found"));
+        if (!category) throw new Error("Category not found");
 
         const supplier = await Supplier.findById(this.supplierId);
-        if (!supplier) return next(new Error("Supplier not found"));
+        if (!supplier) throw new Error("Supplier not found");
 
-        const year = new Date().getFullYear(); // 2026
-        const supplierCode = supplier.supplierCode; // SUP1
-
-        const categoryCode = category.categoryCode; // ELC
+        const year = new Date().getFullYear();
+        const supplierCode = supplier.supplierCode;
+        const categoryCode = category.categoryCode;
         const subCode = category.subCategoryCode || null;
 
+   
         const nameCode = this.productName
             .replace(/[^a-zA-Z]/g, "")
             .substring(0, 3)
-            .toUpperCase(); // IPH
+            .toUpperCase();
 
-        // 🔑 INTERNAL prefix (drives counter)
         const internalPrefix = subCode
             ? `${year}-${supplierCode}-${categoryCode}-${subCode}-${nameCode}`
             : `${year}-${supplierCode}-${categoryCode}-${nameCode}`;
 
-        // 🔐 Atomic counter
         const counter = await SkuCounter.findOneAndUpdate(
             { key: internalPrefix },
             { $inc: { seq: 1 } },
@@ -40,17 +38,16 @@ export const skuMiddleware = async function (next) {
 
         const number = String(counter.seq).padStart(4, "0");
 
-        // ✅ STORE BOTH
         this.internalSku = `${internalPrefix}-${number}`;
         this.publicSku = subCode
             ? `${categoryCode}-${subCode}-${nameCode}-${number}`
             : `${categoryCode}-${nameCode}-${number}`;
 
-        next();
     } catch (err) {
-        next({err:`error on sku-middleware: ${err}`});
+        throw new Error(`SKU middleware error: ${err.message}`);
     }
-}
+};
+
 
 
 /*

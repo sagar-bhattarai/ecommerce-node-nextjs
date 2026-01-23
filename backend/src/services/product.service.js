@@ -1,21 +1,47 @@
 import ProductModel from "../models/skuBasedProduct/Product.model.js";
 
-const add = async (req)=>{
-    console.log(req)
+const add = async (req) => {
+    // console.log(req.body)
 
-    // const existingProduct = await ProductModel.find(req.body.productName);
-
-    // if (existingProduct) {
+    // if (!req.body) {
     //     throw {
     //         statusFromService: 400,
-    //         msgFromService: "Product Name already exists"
+    //         msgFromService: error._message
     //     }
     // }
 
-    const newProduct = await ProductModel.create(req);
-
-    return await newProduct.save();
+    const product = new ProductModel(req.body);
+    return await product.save();
 
 }
 
-export default {add}
+const all = async (req) => {
+    return await ProductModel.find();
+}
+
+const edit = async (req) => {
+    // return await ProductModel.findByIdAndUpdate(req.params.id);
+}
+const single = async (id) => {
+    return await ProductModel.findById(id);
+}
+
+const toggle = async (internalSku) => {
+
+    const updated = await ProductModel.findOneAndUpdate(
+        { internalSku },
+        [{ $set: { isActive: { $not: "$isActive" }, lastStatusChangeAt: new Date() } }],
+        { new: true, updatePipeline: true }
+    );
+
+    if (!updated) {
+        throw {
+            statusFromService: 400,
+            msgFromService: "Product not found for given internal SKU"
+        }
+    }
+
+    return updated;
+}
+
+export default { add, all, edit, single, toggle }

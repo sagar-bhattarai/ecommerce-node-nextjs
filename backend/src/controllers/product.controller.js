@@ -1,18 +1,79 @@
 import productService from "../services/product.service.js";
 import config from "../configs/config.js";
+
 const addProduct = async (req, res) => {
     try {
-        const result = productService.add(req);
+        const result = await productService.add(req);
 
         return res
-        .status(200)
-        .json({ api: config.api, result, message:"product added successfully"});
-        
+            .status(200)
+            .json({ api: config.api, result, message: "product added successfully" });
+
     } catch (error) {
-       return res
-        .status({error: error.statusFromService ||  500})
-        .json({ message: error.msgFromService || "server error while adding product." });
+        return res
+            .status(error.statusFromService || 500)
+            .json({ error: true, message: error.msgFromService || "server error while adding product." });
     }
 }
 
-export { addProduct }
+const getAllProduct = async (req, res) => {
+    try {
+        const result = await productService.all(req);
+
+        return res
+            .status(200)
+            .json({ api: config.api, result, message: "products fetched successfully." });
+
+    } catch (error) {
+        return res
+            .status(error.statusFromService || 500)
+            .json({ error: true, message: error.msgFromService || "server error while fetching products." });
+    }
+}
+
+const updateProduct = async (req, res) => {
+    try {
+        const result = await productService.edit(req);
+
+        return res
+            .status(200)
+            .json({ api: config.api, result, message: "product updated successfully." });
+
+    } catch (error) {
+        return res
+            .status(500)
+            .json({ error: true, message: "server error while updating product." });
+    }
+}
+
+const getProductById = async (req, res) => {
+    try {
+        const result = await productService.single(req.params.id);
+
+        return res
+            .status(200)
+            .json({ api: config.api, result, message: "product fetched successfully." });
+
+    } catch (error) {
+        return res
+            .status(500)
+            .json({ error: true, message: "server error while fetching product." });
+    }
+}
+
+const toggleActiveStatus = async (req, res) => {
+    try {
+        const result = await productService.toggle(req.params.internalSku);
+
+        return res
+            .status(200)
+            .json({ api: config.api, result, message: "product active status toggled successfully." });
+
+    } catch (error) {
+        return res
+            .status(500)
+            .json({ error: true, message: "server error while toggling product active status." });
+    }
+}
+
+export { addProduct, getAllProduct, updateProduct, getProductById, toggleActiveStatus }

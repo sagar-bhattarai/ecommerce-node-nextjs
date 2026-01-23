@@ -5,15 +5,13 @@ const productSchema = new mongoose.Schema(
     {
         internalSku: {
             type: String,
-            required: true,
-            unique: true,
+            unique: true, // last line of defense.
             uppercase: true,
             trim: true,
         },
 
         publicSku: {
             type: String,
-            required: true,
             uppercase: true,
             trim: true,
         },
@@ -54,6 +52,11 @@ const productSchema = new mongoose.Schema(
         },
 
         productImage: [{ type: String }],
+        
+        isActive: {
+            type: Boolean,
+            default: true
+        }
     },
     { timestamps: true }
 );
@@ -64,10 +67,11 @@ const productSchema = new mongoose.Schema(
 
 //REQUIRED (don’t skip this)
 /* indexes */
-productSchema.index({ internalSku: 1 }, { unique: true });  // last line of defense.
+// productSchema.index({ internalSku: 1 }, { unique: true });  // last line of defense.
 productSchema.index({ publicSku: 1 }); // optional (search)
 
-productSchema.pre("save", skuMiddleware);
+// productSchema.pre("save", skuMiddleware);
+productSchema.pre("validate", skuMiddleware);
 
 const ProductModel = mongoose.model("Product", productSchema);
 

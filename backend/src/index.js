@@ -4,7 +4,7 @@ import databaseConnection from "../src/db/connection.js"
 
 const startServer = async () => {
     try {
-        // databaseConnection();
+        databaseConnection();
         server.listen(process.env.PORT || 5000, () => {
             console.log(`Ecommerce app is listening on port ${process.env.BASE_URL}:${config.api.port}`)
         });

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import SkuCounter from "../models/skuBasedProduct/SkuCounter.model.js";
 
-export const skuMiddleware = async function () {
+export const skuMiddleware = async function (req, res, next) {
 
     if (this.internalSku && this.publicSku) return;
 

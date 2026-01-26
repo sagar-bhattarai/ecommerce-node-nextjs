@@ -36,5 +36,21 @@ const loginUser = async (req, res) => {
     }
 }
 
+const logoutUser = async (req, res) => {
+    try {
+        const result = await authService.logout(req.params.id);
 
-export { registerUser, loginUser};
+        return res
+            .status(200) 
+            .cookie("refreshToken", "", options)
+            .cookie("accessToken", "", options)
+            .json({ status: config.api, message: "user logged out successfully." });
+    } catch (error) {
+        return res
+            .status( 500)
+            .json({ error: true , message:"error while loging out." });
+    }
+}
+
+
+export { registerUser, loginUser, logoutUser};

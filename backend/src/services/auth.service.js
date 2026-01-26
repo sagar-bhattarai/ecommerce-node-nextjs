@@ -37,9 +37,16 @@ const register = async (req) => {
 };
 
 const login = async (req) => {
-    const user = await UserModel.findOne({ email: req.email });
-
+    const user = await UserModel.findOne({ userEmail: req.userEmail });
     if (!user) {
+        throw {
+            customStatus: 400,
+            customMessage: "Invalid credentials.",
+        };
+    }
+
+    const passwordValidate = await user.isPasswordCorrect(req.userPassword);
+    if (!passwordValidate) {
         throw {
             customStatus: 400,
             customMessage: "Invalid credentials.",
@@ -56,4 +63,8 @@ const login = async (req) => {
     }
 };
 
-export default { register, login };
+const logout = async (id) => {
+    const user = await UserModel.findByIdAndUpdate(id, { refreshToken: "" });
+};
+
+export default { register, login, logout };

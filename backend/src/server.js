@@ -12,8 +12,10 @@ server.use(express.urlencoded({ extended: true }));
 
 
 server.get('/', (req, res) => { res.send(config.api) });
-import productRouter from "./routes/product.route.js"
+import productRouter from "./routes/product.route.js";
+import userRouter from "./routes/user.route.js"
 
 server.use("/api/v1/products", productRouter);
+server.use("/api/v1/users", userRouter);
 
 export { server };

@@ -18,7 +18,7 @@ const registerUser = async (req, res) => {
             .status(error.customStatus || 500)
             .json({ error: true , message: error.customMessage || "error while registering user." });
     }
-}
+};
 
 const loginUser = async (req, res) => {
     try {
@@ -34,11 +34,11 @@ const loginUser = async (req, res) => {
             .status(error.customStatus || 500)
             .json({ error: true , message: error.customMessage || "error while login." });
     }
-}
+};
 
 const logoutUser = async (req, res) => {
     try {
-        const result = await authService.logout(req.params.id);
+        const result = await authService.logout(req.user._id);
 
         return res
             .status(200) 
@@ -50,7 +50,7 @@ const logoutUser = async (req, res) => {
             .status( 500)
             .json({ error: true , message:"error while loging out." });
     }
-}
+};
 
 
 export { registerUser, loginUser, logoutUser};

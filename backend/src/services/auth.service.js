@@ -1,4 +1,6 @@
 import UserModel from "../models/User.model.js";
+import userService from "../services/user.service.js";
+import uploadImage from "../utility/uploadImage.js";
 
 const generateTokens = async (user) => {
     try {
@@ -19,7 +21,7 @@ const generateTokens = async (user) => {
 };
 
 const register = async (req) => {
-    const existingUser = await UserModel.findOne({ email: req.email });
+    const existingUser = await UserModel.findOne({ userEmail: req.userEmail });
 
     if (existingUser) {
         throw {
@@ -28,11 +30,14 @@ const register = async (req) => {
         };
     }
 
-    if (req.profileImage) {
-        // cloudinary function
+    const url = await uploadImage(req);
+    if (url) {
+        req.profileImage = url;
     }
 
     const newUser = await UserModel(req);
+    const otp = await userService.generateOtp(newUser._id);
+    req.otpId = otp._id;
     return newUser.save();
 };
 

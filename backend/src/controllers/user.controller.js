@@ -1,76 +1,88 @@
 import config from "../configs/config.js";
-import userService  from "../services/user.service.js";
+import userService from "../services/user.service.js";
 
 const options = {
-    httpOnly: true,
-    secure: true,
+  httpOnly: true,
+  secure: true,
 };
 
-const updateUser = async (req) => {
-    try {
-        const result = await userService.update(req);
+const updateUser = async (req, res) => {
+  try {
+    const result = await userService.update(req);
 
-        return res
-            .status(200)
-            .json({ status: config.api, data: result, message: "user updated successfully." });
-    } catch (error) {
-        return res
-            .status(500)
-            .json({ error: true, message: "error while updating user." });
-    }
-}
-const deactivateUser = async (req) => {
-    try {
-        const result = await userService.deactivate(req);
+    return res
+      .status(200)
+      .json({
+        status: config.api,
+        data: result,
+        message: "user updated successfully.",
+      });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: true, message: "error while updating user." });
+  }
+};
+const deactivateUser = async (req, res) => {
+  try {
+    const result = await userService.deactivate(req);
 
-        return res
-            .status(200)
-            .cookie("refreshToken", "", options)
-            .cookie("accessToken", "", options)
-            .json({ status: config.api, message: "user deactivated successfully." });
-    } catch (error) {
-        return res
-            .status(500)
-            .json({ error: true, message: "error while deactivating user." });
-    }
-}
-const sendOtp = async (req)=>{
-        try {
-        const result = await userService.generateOtp(req);
+    return res
+      .status(200)
+      .cookie("refreshToken", "", options)
+      .cookie("accessToken", "", options)
+      .json({ status: config.api, message: "user deactivated successfully." });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: true, message: "error while deactivating user." });
+  }
+};
+const sendOtp = async (req, res) => {
+  try {
+    const result = await userService.generateOtp(req);
 
-        return res
-            .status(200)
-            .json({ status: config.api, data:result, message: "otp has been sent to user email." });
-    } catch (error) {
-        return res
-            .status(500)
-            .json({ error: true, message: "error while generating otp." });
-    }
-}
-const resetPassword = async (req)=>{
-        try {
-        const result = await userService.reset(req);
+    return res
+      .status(200)
+      .json({
+        status: config.api,
+        data: result,
+        message: "otp has been sent to user email.",
+      });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: true, message: "error while generating otp." });
+  }
+};
+const resetPassword = async (req, res) => {
+  try {
+    const result = await userService.reset(req);
 
-        return res
-            .status(200)
-            .json({ status: config.api, data:result, message: "password reseted successfully." });
-    } catch (error) {
-        return res
-            .status(500)
-            .json({ error: true, message: "error while reseting password." });
-    }
-}
-const verifyEmail = async (req)=>{
-        try {
-        const result = await userService.verifyOtp(req);
+    return res
+      .status(200)
+      .json({
+        status: config.api,
+        data: result,
+        message: "password reseted successfully.",
+      });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: true, message: "error while reseting password." });
+  }
+};
+const verifyEmail = async (req, res) => {
+  try {
+    const result = await userService.verifyOtp(req);
 
-        return res
-            .status(200)
-            .json({ status: config.api, message: "email verified successfully." });
-    } catch (error) {
-        return res
-            .status(500)
-            .json({ error: true, message: "error while verifying email." });
-    }
-}
-export  { updateUser, deactivateUser, sendOtp, resetPassword, verifyEmail }
+    return res
+      .status(200)
+      .json({ status: config.api, data:result, message: "email verified successfully." });
+  } catch (error) {
+    return res
+      .status( error.customStatus || 500)
+      .json({ error: true, message: error.customMessage || "error while verifying email." });
+  }
+};
+export { updateUser, deactivateUser, sendOtp, resetPassword, verifyEmail };

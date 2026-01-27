@@ -12,7 +12,7 @@ const validateUser = async (req) => {
             message: "unauthorized request"
         }
     }
-    const decodedToken = jwt.verify(token, config.access_token_secret)
+    const decodedToken = jwt.verify(token, config.access_token_secret);
     const user = await UserModel.findByIdAndUpdate(decodedToken._id, {isActive: true}).select("-userPassword -refreshToken -createdAt -updatedAt -__v");
     return user;
 }

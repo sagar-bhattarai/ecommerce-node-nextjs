@@ -14,6 +14,7 @@ const registerUser = async (req, res) => {
             .status(200)
             .json({ status: config.api , data: result , message: "user registered successfully." });
     } catch (error) {
+        console.log(error)
         return res
             .status(error.customStatus || 500)
             .json({ error: true , message: error.customMessage || "error while registering user." });

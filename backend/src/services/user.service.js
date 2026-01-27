@@ -39,15 +39,16 @@ const reset = async (req) => {
 
 const generateOtp = async (id) => {
     const otp = crypto.randomInt(100000, 1000000);
-    const hashedOtp = bcrypt.hash(otp.toString(), 10);
+    const hashedOtp = await bcrypt.hash(otp.toString(), 10);
     const expiry = Date.now() + 5 * 60 * 1000;
 
-    const saved = await OtpModel.create(
+    const saved = await OtpModel.findOneAndUpdate(
+        { userId: id },
         {
-            otp: (await hashedOtp).toString(),
-            expiry,
-            userId: id
-        }
+            otp: hashedOtp.toString(),
+            expiry
+        },
+        { upsert: true, new: true }
     );
 
     if (!saved) {
@@ -64,18 +65,34 @@ const generateOtp = async (id) => {
 }
 
 const verifyOtp = async (req) => {
-    const value = await OtpModel.findOne({ userId: req.user_id });
-    console.log("otp hashed value", value)
-    const verified = bcrypt.compare(req.otp, value.otp);
-
-    if (!verified) {
+    const value = await OtpModel.findOne({ userId: req.user._id });
+    if (!value) {
         throw {
             customStatus: 400,
-            customMessage: "invalid or expired otp.",
+            customMessage: "OTP not found.",
         };
     }
 
-    await UserModel.findByIdAndUpdate({ id: req.user._id }, { isEmailVerified: true });
+    if (value.expiry < Date.now()) {
+        throw {
+            customStatus: 400,
+            customMessage: "expired otp.",
+        };
+    }
+
+    const verified = await bcrypt.compare(req.body.otp, value.otp);
+    if (!verified) {
+        throw {
+            customStatus: 400,
+            customMessage: "invalid otp.",
+        };
+    }
+    await OtpModel.findOneAndDelete({ userId: req.user._id });
+    return await UserModel.findByIdAndUpdate(
+        req.user._id,
+        { isEmailVerified: true },
+        { new: true, runValidators: true }
+    ).select("-userPassword -refreshToken -createdAt -updatedAt -__v");
 }
 
 export default { update, deactivate, generateOtp, reset, verifyOtp }

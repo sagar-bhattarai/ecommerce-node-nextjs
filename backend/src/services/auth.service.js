@@ -38,6 +38,7 @@ const register = async (req) => {
     const newUser = await UserModel(req);
     const otp = await userService.generateOtp(newUser._id);
     req.otpId = otp._id;
+    console.log("otp",otp) // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> otp
     return newUser.save();
 };
 

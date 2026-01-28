@@ -18,6 +18,7 @@ const updateUser = async (req, res) => {
         message: "user updated successfully.",
       });
   } catch (error) {
+    console.log(error)
     return res
       .status(500)
       .json({ error: true, message: "error while updating user." });
@@ -64,12 +65,12 @@ const resetPassword = async (req, res) => {
       .json({
         status: config.api,
         data: result,
-        message: "password reseted successfully.",
+        message: "password resetted successfully.",
       });
   } catch (error) {
     return res
-      .status(500)
-      .json({ error: true, message: "error while reseting password." });
+      .status(error.customStatus || 500)
+      .json({ error: true, message: error.customMessage || "error while reseting password." });
   }
 };
 const verifyEmail = async (req, res) => {

@@ -20,13 +20,12 @@ const update = async (req) => {
     }
 
     const data = {
-        userName: req.userName || user.userName,
-        userAddress: req.userAddress || user.userAddress,
+        userName: req.body.userName || user.userName,
+        userAddress: req.body.userAddress || user.userAddress,
         profileImage: url,
     }
 
-    const updateUser = new UserModel(data);
-    return updateUser.save();
+    return await UserModel.findByIdAndUpdate(req.user._id, data, { new: true }).select("-userPassword -refreshToken -createdAt -updatedAt -__v");;
 }
 
 const deactivate = async (req) => {
@@ -34,7 +33,20 @@ const deactivate = async (req) => {
 }
 
 const reset = async (req) => {
-    // reset password
+    if (req.body.newPassword !== req.body.confirmPassword) {
+        throw {
+            customStatus: 400,
+            customMessage: "passwords doesnot match.",
+        };
+    }
+    const hashedPassword = await bcrypt.hash(req.body.newPassword.toString(), 10);
+    const resetted = await UserModel.findByIdAndUpdate(req.user._id, { userPassword: hashedPassword }, { new: true });
+    if (!resetted) {
+        throw {
+            customStatus: 400,
+            customMessage: "error while resetting password.",
+        };
+    }
 }
 
 const generateOtp = async (id) => {

@@ -21,7 +21,7 @@ const generateTokens = async (user) => {
 };
 
 const register = async (req) => {
-    const existingUser = await UserModel.findOne({ userEmail: req.userEmail });
+    const existingUser = await UserModel.findOne({ userEmail: req.body.userEmail });
 
     if (existingUser) {
         throw {
@@ -32,13 +32,13 @@ const register = async (req) => {
 
     const url = await uploadImage(req);
     if (url) {
-        req.profileImage = url;
+        req.body.profileImage = url;
     }
 
-    const newUser = await UserModel(req);
+    const newUser = await UserModel(req.body);
     const otp = await userService.generateOtp(newUser._id);
-    req.otpId = otp._id;
-    console.log("otp",otp) // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> otp
+    req.body.otpId = otp._id;
+    console.log("otp >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",otp) // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> otp
     return newUser.save();
 };
 

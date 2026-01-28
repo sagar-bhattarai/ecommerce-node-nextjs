@@ -1,6 +1,7 @@
 import uploadOnCloudinary from "./coudinary.js";
 
  const uploadImage = async (req) => {
+    // if (!req.file?.path) return null;
     if (req?.file !== undefined && Object.hasOwn(req?.file, "path")) {
         const upload = await uploadOnCloudinary(req.file.path);
         if (!upload) {

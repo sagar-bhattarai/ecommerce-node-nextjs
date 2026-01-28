@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { CUSTOMER, MERCHANT } from "../constants/constant.js";
+import { CUSTOMER, MERCHANT } from "../constants/role.constant.js";
 import bcrypt from "bcrypt";
 import config from "../configs/config.js";
 import jwt from "jsonwebtoken";
@@ -68,7 +68,6 @@ userSchema.methods.generateAccessToken = async function () {
         return jwt.sign(
             {
                 _id: this._id,
-                userName: this.userName,
                 userEmail: this.userEmail,
             },
             config.access_token_secret,

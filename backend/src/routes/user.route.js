@@ -11,7 +11,7 @@ router.post("/register", upload.single('profileImage'), registerUser);
 router.post("/login", loginUser);
 router.get("/logout", authorization, logoutUser);
 
-router.put("/update", authorization, updateUser);
+router.put("/update", upload.single('profileImage'), authorization, updateUser);
 router.get("/deactive", authorization, deactivateUser);
 router.post("/reset-password", authorization, resetPassword);
 router.get("/send-otp", authorization, sendOtp);

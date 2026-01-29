@@ -3,9 +3,9 @@ import fs from "fs";
 import config from "../configs/config.js";
 
 cloudinary.config({
-    cloud_name: config.cloudinaray_cloud_name,
-    api_key: config.cloudinary_api_key,
-    api_secret: config.cloudinary_api_secret,
+    cloud_name: config.cloudinary.cloud_name,
+    api_key: config.cloudinary.api_key,
+    api_secret: config.cloudinary.api_secret,
 });
 
 const uploadOnCloudinary = async (localFilePath) => {

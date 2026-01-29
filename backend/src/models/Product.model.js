@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { skuMiddleware } from "../../middlewares/sku.middleware.js";
+import { skuMiddleware } from "../middlewares/sku.middleware.js";
 
 const productSchema = new mongoose.Schema(
     {
@@ -18,29 +18,40 @@ const productSchema = new mongoose.Schema(
 
         productName: {
             type: String,
-            required: true,
+            required: [true, "category name is required"],
             trim: true,
         },
 
         productDescription: {
             type: String,
-            required: true,
+             required: [true, "product description is required"],
             trim: true,
         },
 
-        productStock: { type: Number, required: true },
-        productPrice: { type: Number, required: true },
+        productStock: {
+            type: Number,
+            default: 0,
+            min: 0
+        },
+
+        productPrice: {
+            type: Number,
+            default: 0,
+            min: 0
+        },
+
+        oldPrice: Number,
 
         categoryId: {
             type: Schema.Types.ObjectId,
             ref: "Category",
-            required: true,
+            required: [true, "category id is required"],
         },
 
         supplierId: {
             type: Schema.Types.ObjectId,
             ref: "User",
-            required: true,
+            required: [true, "merchant id is required"],
         },
 
         productWeight: Number,
@@ -51,8 +62,19 @@ const productSchema = new mongoose.Schema(
             height: Number,
         },
 
+        attributes: {
+            color: {
+                name: String,
+                hex: String,
+            },
+            size: {
+                type: String,
+                enum: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+            },
+        },
+
         productImage: [{ type: String }],
-        
+
         isActive: {
             type: Boolean,
             default: true
@@ -71,7 +93,7 @@ const productSchema = new mongoose.Schema(
 productSchema.index({ publicSku: 1 }); // optional (search)
 
 // productSchema.pre("save", skuMiddleware);
-productSchema.pre("validate", skuMiddleware);
+productSchema.pre("validate", skuMiddleware);  // {publicSku, internalSku} comes from here 
 
 const ProductModel = mongoose.model("Product", productSchema);
 

@@ -1,5 +1,6 @@
 import UserModel from "../models/User.model.js";
 import userService from "../services/user.service.js";
+import sendMail from "../utility/mail.js";
 import uploadImage from "../utility/uploadImage.js";
 
 const generateTokens = async (user) => {
@@ -36,10 +37,11 @@ const register = async (req) => {
     }
 
     const newUser = await UserModel(req.body);
-    const otp = await userService.generateOtp(newUser._id);
-    req.body.otpId = otp._id;
-    console.log("otp >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",otp) // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> otp
-    return newUser.save();
+    newUser.save();
+    const { userPassword, __v, createdAt, updatedAt, ...safeUser } = newUser.toObject();
+
+    // await userService.sendOtpOnMail(newUser);
+    return safeUser;
 };
 
 const login = async (req) => {

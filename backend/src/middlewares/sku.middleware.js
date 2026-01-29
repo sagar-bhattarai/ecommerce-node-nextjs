@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import SkuCounter from "../models/skuBasedProduct/SkuCounter.model.js";
+import SkuCounter from "../models/counter/SkuCounter.model.js";
 
 export const skuMiddleware = async function (req, res, next) {
 
@@ -16,7 +16,7 @@ export const skuMiddleware = async function (req, res, next) {
         if (!supplier) throw new Error("Supplier not found");
 
         const year = new Date().getFullYear();
-        const supplierCode = supplier.supplierCode;
+        const supplierCode = supplier.userCode;
         const categoryCode = category.categoryCode;
         const subCode = category.subCategoryCode || null;
 

@@ -1,7 +1,11 @@
 import CategoryModel from "../models/Category.model.js";
+import { validateCategory } from "../utility/categoryValidation.js"
 
-const add = async (req) => {
-    const category = await CategoryModel.findOne({ categoryName: req.body.categoryName });
+const add = async (request) => {
+    const reqBody = request.body;
+    validateCategory(reqBody);
+
+    const category = await CategoryModel.findOne({ categoryName: reqBody.categoryName });
     if (category) {
         throw {
             statusFromService: 400,
@@ -9,15 +13,15 @@ const add = async (req) => {
         }
     }
 
-    const newCategory = new CategoryModel(req.body);
+    const newCategory = new CategoryModel(reqBody);
     await newCategory.save();
-    const { userPassword, __v, createdAt, updatedAt, ...safeCategory } = newCategory.toObject();
+    const { __v, createdAt, updatedAt, ...safeCategory } = newCategory.toObject();
 
     return safeCategory;
 }
 
 const all = async () => {
-    return await CategoryModel.find().select("categoryName categoryDescription");
+    return await CategoryModel.find().select("categoryName attributes categoryCode");
 }
 
 const edit = async (req) => {
@@ -29,16 +33,13 @@ const edit = async (req) => {
         }
     }
 
-    let updateValue = {
-        categoryName: req.body.categoryName || category.categoryName,
-        categoryDescription: req.body.categoryDescription || category.categoryDescription
-    };
+    const updateValue =  JSON.stringify(req.body)
 
-    return await CategoryModel.findByIdAndUpdate(req.params.id, updateValue, { new: true }).select("categoryName categoryDescription");
+    return await CategoryModel.findByIdAndUpdate(req.params.id, updateValue, { new: true }).select("categoryName attributes categoryCode");
 }
 
 const single = async (id) => {
-    return await CategoryModel.findById(id).select("categoryName categoryDescription");
+    return await CategoryModel.findById(id).select("categoryName attributes categoryCode");
 }
 
 const remove = async (req) => {

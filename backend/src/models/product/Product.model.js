@@ -1,4 +1,61 @@
 import mongoose, { Schema } from "mongoose";
+
+const productSchema = new Schema(
+    {
+        name: {
+            type: String,
+            required: true
+        },
+        description: String,
+
+        categoryId: {
+            type: Schema.Types.ObjectId,
+            ref: "Category",
+            required: true,
+        },
+
+        brand: String,
+        images: [String],
+        isActive: {
+            type: Boolean,
+            default: true
+        },
+    },
+    { timestamps: true },
+);
+
+const ProductModel = mongoose.model("Product", productSchema);
+
+export default ProductModel;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+import mongoose, { Schema } from "mongoose";
 import { skuMiddleware } from "../middlewares/sku.middleware.js";
 
 const productSchema = new mongoose.Schema(
@@ -88,7 +145,7 @@ const productSchema = new mongoose.Schema(
 
 
 //REQUIRED (don’t skip this)
-/* indexes */
+// indexes 
 // productSchema.index({ internalSku: 1 }, { unique: true });  // last line of defense.
 productSchema.index({ publicSku: 1 }); // optional (search)
 
@@ -98,3 +155,5 @@ productSchema.pre("validate", skuMiddleware);  // {publicSku, internalSku} comes
 const ProductModel = mongoose.model("Product", productSchema);
 
 export default ProductModel;
+
+*/

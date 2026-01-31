@@ -10,7 +10,16 @@ const categorySchema = new mongoose.Schema(
             lowercase: true,
             unique: true,
             index: true,
-        },
+        }, 
+        attributes: [{
+            name: String,
+            type: {
+                type: String,
+                enum: ["string", "number", "enum"]
+            },
+            values: [String], // only for enum
+            required: Boolean
+        }],
         categoryDescription: {
             type: String,
             trim: true,
@@ -24,7 +33,6 @@ const categorySchema = new mongoose.Schema(
     },
     { timestamps: true }
 )
-
 
 
 categorySchema.statics.generateCategoryCode = async function (categoryName) {
@@ -53,3 +61,4 @@ categorySchema.pre("save", async function () {
 const CategoryModel = mongoose.model("Category", categorySchema);
 
 export default CategoryModel;
+

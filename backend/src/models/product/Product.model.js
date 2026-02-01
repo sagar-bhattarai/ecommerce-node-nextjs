@@ -1,32 +1,63 @@
-import mongoose, { Schema } from "mongoose";
+// models/Product.model.js
+import mongoose from "mongoose";
 
-const productSchema = new Schema(
+const productSchema = new mongoose.Schema(
     {
-        name: {
-            type: String,
-            required: true
-        },
-        description: String,
-
-        categoryId: {
-            type: Schema.Types.ObjectId,
-            ref: "Category",
-            required: true,
-        },
-
+        productName: { type: String, required: true, trim: true },
+        productDescription: { type: String, required: true },
+        categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
         brand: String,
         images: [String],
-        isActive: {
-            type: Boolean,
-            default: true
-        },
+        isActive: { type: Boolean, default: true }
     },
-    { timestamps: true },
+    { timestamps: true }
 );
 
-const ProductModel = mongoose.model("Product", productSchema);
+export default mongoose.model("Product", productSchema);
 
-export default ProductModel;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import mongoose, { Schema } from "mongoose";
+
+// const productSchema = new Schema(
+//     {
+//         productName: {
+//             type: String,
+//             required: true
+//         },
+//         productDescription: String,
+
+//         categoryId: {
+//             type: Schema.Types.ObjectId,
+//             ref: "Category",
+//             required: true,
+//         },
+
+//         brand: String,
+//         images: [String],
+//         isActive: {
+//             type: Boolean,
+//             default: true
+//         },
+//     },
+//     { timestamps: true },
+// );
+
+// const ProductModel = mongoose.model("Product", productSchema);
+
+// export default ProductModel;
 
 
 

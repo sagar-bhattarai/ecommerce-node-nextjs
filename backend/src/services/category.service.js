@@ -1,5 +1,5 @@
 import CategoryModel from "../models/Category.model.js";
-import { validateCategory } from "../utility/categoryValidation.js"
+import { validateCategory } from "../utility/validateCategory.js"
 
 const add = async (request) => {
     const reqBody = request.body;

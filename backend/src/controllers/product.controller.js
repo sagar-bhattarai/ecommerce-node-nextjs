@@ -3,7 +3,7 @@ import config from "../configs/config.js";
 
 const addProduct = async (req, res) => {
     try {
-        const result = await productService.add(req);
+        const result = await productService.createProductWithVariantForVendor (req);
 
         return res
             .status(200)
@@ -40,6 +40,7 @@ const updateProduct = async (req, res) => {
             .json({ api: config.api, result, message: "product updated successfully." });
 
     } catch (error) {
+        console.log(error)
         return res
             .status(500)
             .json({ error: true, message: "server error while updating product." });

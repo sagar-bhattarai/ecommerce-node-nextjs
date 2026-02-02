@@ -12,9 +12,14 @@ const router = express.Router();
 router.post("/add", auth, roleBasedAuth(MERCHANT), addProduct);
 
 /** 
- * GET /api/products/all
+ * GET /api/products
+ *     /api/products?minPrice=1000&attributes[color]=Red
+ *     /api/products?attributes[color]=Red&attributes[size]=M
+ *     /api/products?brand=Nike&attributes[material]=Cotton
+ *     /api/products?sort=price_asc
 */
-router.get("/all", getAllProduct);
+router.get("/", getAllProduct);
+
 
 /** 
  * GET /api/products/product/:id
@@ -28,7 +33,7 @@ router.get("/toggleStatus/:internalSku", auth, roleBasedAuth(MERCHANT), toggleAc
 
 /** 
  * PATCH /api/products/update/:id
- * PATCH /api/products/:id/admin-update
+ *       /api/products/:id/admin-update
 */
 // router.patch("/update/:id", auth, roleBasedAuth(MERCHANT), updateProduct);   
 router.patch("/:id/admin-update", auth, roleBasedAuth(MERCHANT, ADMIN), updateProduct);

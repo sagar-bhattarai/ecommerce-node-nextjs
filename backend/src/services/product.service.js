@@ -6,7 +6,7 @@ import { skuGenerator } from "../utility/skuGenerator.js";
 import { validateCategoryAttributes } from "../utility/validateCategoryAttributes.js"
 import mongoose from "mongoose";
 
-const createProductWithVariantForVendor = async (req, res) => {
+const createProductWithVariantForVendor = async (req) => {
     const {
         productName,
         productDescription,
@@ -44,7 +44,7 @@ const createProductWithVariantForVendor = async (req, res) => {
         attributes,
     });
 
- 
+
     if (!variant) {
         variant = await ProductVariantModel.create({
             productId: product._id,
@@ -66,98 +66,211 @@ const createProductWithVariantForVendor = async (req, res) => {
     return { product, variant, listing };
 };
 
-const all = async (req) => {
+// const search = async (req) => {
+//     const {
+//         minPrice,
+//         maxPrice,
+//         brand,
+//         categoryId,
+//         attributes = {}, // dynamic attributes
+//         page = 1,
+//         limit = 3
+//     } = req.query;
 
-    const page = Number(req.query.page) || 1;
-    const size = Number(req.query.size) || 3;
-    const skip = (page - 1) * size;
+//     const pipeline = [];
 
-    const totalProducts = await ProductModel.countDocuments({ isActive: true });
+//     /* ===============================
+//        1️⃣ PRICE FILTER (VendorListing)
+//        =============================== */
+//     const priceFilter = {};
+//     if (minPrice) priceFilter.$gte = Number(minPrice);
+//     if (maxPrice) priceFilter.$lte = Number(maxPrice);
 
-    // 1. fetch products
-    const products = await ProductModel.find({ isActive: true })
-        .select("productName brand categoryId images")
-        .skip(skip)
-        .limit(size)
-        .lean();
+//     if (Object.keys(priceFilter).length) {
+//         pipeline.push({
+//             $match: { productPrice: priceFilter }
+//         });
+//     }
 
-    if (!products.length) {
-        return {
-            page,
-            size,
-            totalProducts,
-            totalPages: Math.ceil(totalProducts / size),
-            data: []
-        };
-    }
+//     /* ===============================
+//        2️⃣ JOIN VARIANT
+//        =============================== */
+//     pipeline.push(
+//         {
+//             $lookup: {
+//                 from: "productvariants",
+//                 localField: "variantId",
+//                 foreignField: "_id",
+//                 as: "variant"
+//             }
+//         },
+//         { $unwind: "$variant" }
+//     );
 
-    // 2. fetch variants
-    const productIds = products.map(p => p._id);
+//     /* ===============================
+//        3️⃣ DYNAMIC ATTRIBUTE FILTERS
+//        =============================== */
+//     const attributeFilters = [];
 
-    const variants = await ProductVariantModel.find({
-        productId: { $in: productIds }
-    })
-        .select("productId attributes")
-        .lean();
+//     for (const key in attributes) {
+//         attributeFilters.push({
+//             [`variant.attributes.${key}`]: attributes[key]
+//         });
+//     }
 
-    // 3. fetch listings (price + stock)
-    const variantIds = variants.map(v => v._id);
+//     if (attributeFilters.length) {
+//         pipeline.push({
+//             $match: { $and: attributeFilters }
+//         });
+//     }
 
-    const listings = await MultiVendorModel.find({
-        variantId: { $in: variantIds },
-        isActive: true
-    })
-        .select("variantId productPrice productStock")
-        .lean();
+//     /* ===============================
+//        4️⃣ JOIN PRODUCT
+//        =============================== */
+//     pipeline.push(
+//         {
+//             $lookup: {
+//                 from: "products",
+//                 localField: "productId",
+//                 foreignField: "_id",
+//                 as: "product"
+//             }
+//         },
+//         { $unwind: "$product" }
+//     );
 
-    // 4. map listings by variant
-    const listingMap = {};
-    listings.forEach(l => {
-        const key = l.variantId.toString();
-        if (!listingMap[key]) listingMap[key] = [];
-        listingMap[key].push(l);
-    });
+//     /* ===============================
+//        5️⃣ PRODUCT FILTERS
+//        =============================== */
+//     const productMatch = {};
+//     if (brand) productMatch["product.brand"] = brand;
+//     if (categoryId) productMatch["product.categoryId"] = categoryId;
 
-    // 5. attach price info to variants
-    const variantsByProduct = {};
-    variants.forEach(v => {
-        const prices = (listingMap[v._id.toString()] || []).map(l => l.price);
+//     if (Object.keys(productMatch).length) {
+//         pipeline.push({ $match: productMatch });
+//     }
 
-        const cheapestPrice = prices.length ? Math.min(...prices) : null;
+//     /* ===============================
+//        6️⃣ CLEAN RESPONSE SHAPE
+//        =============================== */
+//     pipeline.push({
+//         $project: {
+//             _id: 1,
+//             productPrice: 1,
+//             productStock: 1,
+//             "variant.attributes": 1,
+//             "product.productName": 1,
+//             "product.brand": 1
+//         }
+//     });
 
-        const variantData = {
-            _id: v._id,
-            attributes: v.attributes,
-            cheapestPrice
-        };
+//     /* ===============================
+//        7️⃣ PAGINATION
+//        =============================== */
+//     pipeline.push(
+//         { $skip: (page - 1) * limit },
+//         { $limit: Number(limit) }
+//     );
 
-        const pid = v.productId.toString();
-        if (!variantsByProduct[pid]) variantsByProduct[pid] = [];
-        variantsByProduct[pid].push(variantData);
-    });
+//     const data = await MultiVendorModel.aggregate(pipeline);
 
-    // 6. attach variants to products
-    const result = products.map(p => ({
-        ...p,
-        variants: variantsByProduct[p._id.toString()] || []
-    }));
+//     return {
+//         count: data.length,
+//         data
+//     };
+// };
 
-    const data = {
-        page,
-        size,
-        totalProducts,
-        totalPages: Math.ceil(totalProducts / size),
-        data: result
-    }
+// const all = async (req) => {
 
-    return data;
-};
+//     const page = Number(req.query.page) || 1;
+//     const size = Number(req.query.size) || 3;
+//     const skip = (page - 1) * size;
 
+//     const totalProducts = await ProductModel.countDocuments({ isActive: true });
+
+//     // 1. fetch products
+//     const products = await ProductModel.find({ isActive: true })
+//         .select("productName brand categoryId images")
+//         .skip(skip)
+//         .limit(size)
+//         .lean();
+
+//     if (!products.length) {
+//         return {
+//             page,
+//             size,
+//             totalProducts,
+//             totalPages: Math.ceil(totalProducts / size),
+//             data: []
+//         };
+//     }
+
+//     // 2. fetch variants
+//     const productIds = products.map(p => p._id);
+
+//     const variants = await ProductVariantModel.find({
+//         productId: { $in: productIds }
+//     })
+//         .select("productId attributes")
+//         .lean();
+
+//     // 3. fetch listings (price + stock)
+//     const variantIds = variants.map(v => v._id);
+
+//     const listings = await MultiVendorModel.find({
+//         variantId: { $in: variantIds },
+//         isActive: true
+//     })
+//         .select("variantId productPrice productStock")
+//         .lean();
+
+//     // 4. map listings by variant
+//     const listingMap = {};
+//     listings.forEach(l => {
+//         const key = l.variantId.toString();
+//         if (!listingMap[key]) listingMap[key] = [];
+//         listingMap[key].push(l);
+//     });
+
+//     // 5. attach price info to variants
+//     const variantsByProduct = {};
+//     variants.forEach(v => {
+//         const prices = (listingMap[v._id.toString()] || []).map(l => l.price);
+
+//         const cheapestPrice = prices.length ? Math.min(...prices) : null;
+
+//         const variantData = {
+//             _id: v._id,
+//             attributes: v.attributes,
+//             cheapestPrice
+//         };
+
+//         const pid = v.productId.toString();
+//         if (!variantsByProduct[pid]) variantsByProduct[pid] = [];
+//         variantsByProduct[pid].push(variantData);
+//     });
+
+//     // 6. attach variants to products
+//     const result = products.map(p => ({
+//         ...p,
+//         variants: variantsByProduct[p._id.toString()] || []
+//     }));
+
+//     const data = {
+//         page,
+//         size,
+//         totalProducts,
+//         totalPages: Math.ceil(totalProducts / size),
+//         data: result
+//     }
+
+//     return data;
+// };
 
 const single = async (id) => {
     // 1. product
     const product = await ProductModel.findOne({
-        _id: productId,
+        _id: id,
         isActive: true
     }).lean();
 
@@ -233,7 +346,6 @@ const toggle = async (productId) => {
 
     return updated;
 };
-
 
 /*
 
@@ -312,7 +424,7 @@ const edit = async (req, res) => {   // adminUpdateProduct
     // session.startTransaction();
 
     try {
-        const productId  = req.params.id;
+        const productId = req.params.id;
         const { productData, variantsData, vendorListingsData } = req.body;
 
         // 1️⃣ Update product info
@@ -366,5 +478,190 @@ const edit = async (req, res) => {   // adminUpdateProduct
     }
 };
 
+
+const getProducts = async (req) => {
+  const hasFilterOrSort =
+    req.query.sort ||
+    req.query.minPrice ||
+    req.query.maxPrice ||
+    req.query.color ||
+    req.query.brand;
+
+  if (hasFilterOrSort) {
+    return getProductsWithAggregation(req);
+  }
+
+  return getProductsSimple(req);
+};
+
+const getProductsSimple = async (req) => {
+  const page = Number(req.query.page) || 1;
+  const size = Number(req.query.size) || 10;
+  const skip = (page - 1) * size;
+
+  const totalProducts = await ProductModel.countDocuments({ isActive: true });
+
+  // 1. products
+  const products = await ProductModel.find({ isActive: true })
+    .select("productName brand categoryId images")
+    .skip(skip)
+    .limit(size)
+    .lean();
+
+  if (!products.length) {
+    return { page, size, totalProducts, data: [] };
+  }
+
+  // 2. variants
+  const productIds = products.map(p => p._id);
+
+  const variants = await ProductVariantModel.find({
+    productId: { $in: productIds }
+  })
+    .select("_id productId")
+    .lean();
+
+  const variantIds = variants.map(v => v._id);
+
+  // 3. vendor listings (only active + in stock)
+  const listings = await MultiVendorModel.find({
+    variantId: { $in: variantIds },
+    isActive: true,
+    productStock: { $gt: 0 }
+  })
+    .select("variantId productPrice")
+    .lean();
+
+  // 4. map min price per product
+  const minPriceByProduct = {};
+
+  listings.forEach(l => {
+    const variant = variants.find(v =>
+      v._id.toString() === l.variantId.toString()
+    );
+
+    if (!variant) return;
+
+    const pid = variant.productId.toString();
+
+    if (
+      !minPriceByProduct[pid] ||
+      l.productPrice < minPriceByProduct[pid]
+    ) {
+      minPriceByProduct[pid] = l.productPrice;
+    }
+  });
+
+  // 5. attach price to product
+  const data = products.map(p => ({
+    ...p,
+    startingPrice: minPriceByProduct[p._id.toString()] ?? null
+  }));
+
+  return {
+    page,
+    size,
+    totalProducts,
+    totalPages: Math.ceil(totalProducts / size),
+    data
+  };
+};
+
+const getProductsWithAggregation = async (req) => {
+  const page = Number(req.query.page) || 1;
+  const size = Number(req.query.size) || 10;
+  const skip = (page - 1) * size;
+
+  const {
+    minPrice,
+    maxPrice,
+    color,
+    brand,
+    sort
+  } = req.query;
+
+  const matchStage = { isActive: true };
+
+  if (brand) {
+    matchStage.brand = brand;
+  }
+
+  const priceMatch = {};
+  if (minPrice) priceMatch.$gte = Number(minPrice);
+  if (maxPrice) priceMatch.$lte = Number(maxPrice);
+
+  const pipeline = [
+    { $match: matchStage },
+
+    // join variants
+    {
+      $lookup: {
+        from: "productvariants",
+        localField: "_id",
+        foreignField: "productId",
+        as: "variants"
+      }
+    },
+
+    { $unwind: "$variants" },
+
+    // filter by attributes (example: color)
+    ...(color
+      ? [{ $match: { "variants.attributes.color": color } }]
+      : []),
+
+    // join vendor listings
+    {
+      $lookup: {
+        from: "multivendors",
+        localField: "variants._id",
+        foreignField: "variantId",
+        as: "listings"
+      }
+    },
+
+    { $unwind: "$listings" },
+
+    // price filter
+    ...(Object.keys(priceMatch).length
+      ? [{ $match: { "listings.productPrice": priceMatch } }]
+      : []),
+
+    // group back to product
+    {
+      $group: {
+        _id: "$_id",
+        productName: { $first: "$productName" },
+        brand: { $first: "$brand" },
+        images: { $first: "$images" },
+        minPrice: { $min: "$listings.productPrice" }
+      }
+    }
+  ];
+
+  // sorting
+  if (sort === "price_asc") {
+    pipeline.push({ $sort: { minPrice: 1 } });
+  }
+
+  if (sort === "price_desc") {
+    pipeline.push({ $sort: { minPrice: -1 } });
+  }
+
+  // pagination
+  pipeline.push(
+    { $skip: skip },
+    { $limit: size }
+  );
+
+  const data = await ProductModel.aggregate(pipeline);
+
+  return {
+    page,
+    size,
+    data
+  };
+};
+
 // export default { createProductWithVariantForVendor, all, single, toggle, updateProduct, updateVendorListing, updateVariant, edit };
-export default { createProductWithVariantForVendor, all, single, toggle, edit };
+export default { createProductWithVariantForVendor, single, toggle, edit, getProducts };

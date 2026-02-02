@@ -41,8 +41,8 @@ const updateOrder = async (req, res) => {
 
     } catch (error) {
         return res
-            .status(500)
-            .json({ error: true, message: "server error while updating order." });
+            .status(error.statusFromService || 500)
+            .json({ error: true, message: error.msgFromService || "server error while updating order." });
     }
 }
 

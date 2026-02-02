@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const paymentSchema = new mongoose.Schema(
     {
-        transactionId: String,
+        transactionId: String,  // ORDER NUMBER
         amount: {
             type: Number,
             required: [true, "payment amount is required"]

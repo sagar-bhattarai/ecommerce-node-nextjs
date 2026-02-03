@@ -6,13 +6,15 @@ import auth from "../middlewares/auth.middleware.js";
 import {upload} from "../middlewares/multer.middleware.js";
 import roleBasedAuth from "../middlewares/roleBasedAuth.middleware.js";
 import { ADMIN } from "../constants/roles.constant.js";
+import userSchema from "../library/schema/user/user.schema.zod.js";
+import zodValidator from "../middlewares/zod.validator.middleware.js"
 
 const router = express.Router();
 
 /** 
  * POST /api/users/register
 */
-router.post("/register", upload.single('profileImage'), registerUser);
+router.post("/register",  upload.single('profileImage'), zodValidator(userSchema), registerUser);
 /** 
  * POST /api/users/login
 */

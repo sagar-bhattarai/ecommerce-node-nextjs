@@ -1,6 +1,6 @@
 import UserModel from "../models/User.model.js";
-import userService from "../services/user.service.js";
-import sendMail from "../utility/mail.js";
+// import userService from "../services/user.service.js";
+// import sendMail from "../utility/mail.js";
 import uploadImage from "../utility/uploadImage.js";
 
 const generateTokens = async (user) => {

@@ -6,19 +6,22 @@ import auth from "../middlewares/auth.middleware.js";
 import {upload} from "../middlewares/multer.middleware.js";
 import roleBasedAuth from "../middlewares/roleBasedAuth.middleware.js";
 import { ADMIN } from "../constants/roles.constant.js";
-import userSchema from "../library/schema/user/user.schema.zod.js";
-import zodValidator from "../middlewares/zod.validator.middleware.js"
+
+import zodValidator from "../middlewares/zod.validator.middleware.js";
+import registerSchema from "../library/schema/user/register.schema.zod.js";
+import loginSchema from "../library/schema/user/login.schema.zod.js";
+import resetSchema from "../library/schema/user/reset-password.zod.js";
 
 const router = express.Router();
 
 /** 
  * POST /api/users/register
 */
-router.post("/register",  upload.single('profileImage'), zodValidator(userSchema), registerUser);
+router.post("/register",  upload.single('profileImage'), zodValidator(registerSchema), registerUser);
 /** 
  * POST /api/users/login
 */
-router.post("/login", loginUser);
+router.post("/login", zodValidator(loginSchema), loginUser);
 /** 
  * GET /api/users/logout
 */
@@ -36,7 +39,7 @@ router.get("/deactive", auth, deactivateUser);
 /** 
  * POST /api/users/reset-password
 */
-router.post("/reset-password", auth, resetPassword);
+router.post("/reset-password", auth, zodValidator(resetSchema), resetPassword);
 /** 
  * GET /api/users/send-otp
 */

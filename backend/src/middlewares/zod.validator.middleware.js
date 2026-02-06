@@ -2,7 +2,6 @@ const zodValidator = (schema) =>  (req, res, next) => {
         const result = schema.safeParse(req.body);
 
         if (!result.success) {
-            // const formatted = result.error.format();
 
             const errors = {};
 
@@ -16,7 +15,6 @@ const zodValidator = (schema) =>  (req, res, next) => {
 
             return res.status(400).json({
                 success: false,
-                // formatted, 
                 errors,
             });
         }

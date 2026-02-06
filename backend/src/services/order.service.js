@@ -1,4 +1,5 @@
 import OrderModel from "../models/Order.model.js";
+import {PAID, SHIPPED, DELIVERED} from "../constants/order.constant.js";
 
 const add = async (req) => {
     const order = await OrderModel.findOne({ orderNumber: req.body.orderNumber });
@@ -23,6 +24,14 @@ const edit = async (req) => {
         throw {
             statusFromService: 400,
             msgFromService: "order not found."
+        }
+    }
+    
+    const allowedStatus = [PAID, SHIPPED, DELIVERED];
+    if(!allowedStatus.includes(req.body.orderStatus)){
+        throw {
+            statusFromService: 400,
+            msgFromService: "Status not found/invalid."
         }
     }
 

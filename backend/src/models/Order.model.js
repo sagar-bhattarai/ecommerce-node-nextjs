@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import {PAID, SHIPPED, DELIVERED, PENDING}  from "../constants/order.constant.js";
 
 const orderSchema = new mongoose.Schema(
   {
@@ -40,8 +41,9 @@ const orderSchema = new mongoose.Schema(
 
     orderStatus: {
       type: String,
-      enum: ["pending", "paid", "shipped", "delivered"],
-      default: "pending",
+      // enum: ["pending", "paid", "shipped", "delivered"],
+      enum: [PAID, SHIPPED, DELIVERED , PENDING],
+      default: PENDING,
     },
     
     payment: {

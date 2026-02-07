@@ -4,12 +4,16 @@ import auth from "../middlewares/auth.middleware.js";
 import roleBasedAuth from "../middlewares/roleBasedAuth.middleware.js";
 import { CUSTOMER, MERCHANT, ADMIN } from "../constants/roles.constant.js";
 
+import zodValidator from "../middlewares/zod.validator.middleware.js";
+import productSchema from "../library/schema/product/addProduct.schema.js";
+import updateProductSchema from "../library/schema/product/updateProduct.schema.js";
+
 const router = express.Router();
 
 /** 
  * POST /api/products/add
 */
-router.post("/add", auth, roleBasedAuth(MERCHANT), addProduct);
+router.post("/add", auth, roleBasedAuth(MERCHANT), zodValidator(productSchema), addProduct);
 
 /** 
  * GET /api/products
@@ -36,7 +40,7 @@ router.get("/toggleStatus/:internalSku", auth, roleBasedAuth(MERCHANT), toggleAc
  *       /api/products/:id/admin-update
 */
 // router.patch("/update/:id", auth, roleBasedAuth(MERCHANT), updateProduct);   
-router.patch("/:id/admin-update", auth, roleBasedAuth(MERCHANT, ADMIN), updateProduct);
+router.patch("/:id/admin-update", auth, roleBasedAuth(MERCHANT, ADMIN), zodValidator(updateProductSchema), updateProduct);
 
 /** 
  * GET /api/products/delete/:id

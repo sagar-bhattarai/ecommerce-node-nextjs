@@ -8,7 +8,7 @@ const options = {
 
 const updateUser = async (req, res) => {
   try {
-    const result = await userService.update(req);
+    const result = await userService.edit(req);
 
     return res
       .status(200)
@@ -18,7 +18,6 @@ const updateUser = async (req, res) => {
         message: "user updated successfully.",
       });
   } catch (error) {
-    console.log(error)
     return res
       .status(500)
       .json({ error: true, message: "error while updating user." });
@@ -41,19 +40,17 @@ const deactivateUser = async (req, res) => {
 };
 const sendOtp = async (req, res) => {
   try {
-    const result = await userService.generateOtp(req);
-
+    const result = await userService.sendOtpOnMail(req.user);
     return res
       .status(200)
       .json({
         status: config.api,
-        data: result,
         message: "otp has been sent to user email.",
       });
   } catch (error) {
     return res
-      .status(500)
-      .json({ error: true, message: "error while generating otp." });
+      .status( error.customStatus || 500)
+      .json({ error: true, message: error.customMessage || "error while generating otp." });
   }
 };
 const resetPassword = async (req, res) => {
@@ -79,11 +76,26 @@ const verifyEmail = async (req, res) => {
 
     return res
       .status(200)
-      .json({ status: config.api, data:result, message: "email verified successfully." });
+      .json({ status: config.api, data: result, message: "email verified successfully." });
   } catch (error) {
     return res
-      .status( error.customStatus || 500)
+      .status(error.customStatus || 500)
       .json({ error: true, message: error.customMessage || "error while verifying email." });
   }
 };
-export { updateUser, deactivateUser, sendOtp, resetPassword, verifyEmail };
+const updateUserRole = async (req, res) => {
+  try {
+    const result = await userService.editRole(req);
+
+    return res
+      .status(200)
+      .json({ status: config.api, data: result, message: "role updated successfully." });
+  } catch (error) {
+    console.log(error)
+    return res
+      .status(error.customStatus || 500)
+      .json({ error: true, message: error.customMessage || "error while editing role." });
+  }
+};
+
+export { updateUser, deactivateUser, sendOtp, resetPassword, verifyEmail, updateUserRole };

@@ -5,18 +5,30 @@ const config = {
         status: process.env.STATUS || "",
         port: process.env.PORT || "",
     },
-    
+
     mongodb_url: process.env.MONGO_DB_URI || "",
 
-    access_token_secret: process.env.ACCESS_TOKEN_SECRET,
-    access_token_expiry: process.env.ACCESS_TOKEN_EXPIRY,
-    
-    refresh_token_secret: process.env.REFRESH_TOKEN_SECRET,
-    refresh_token_expiry: process.env.REFRESH_TOKEN_EXPIRY,
+    accessToken: {
+        secret: process.env.ACCESS_TOKEN_SECRET,
+        expiry: process.env.ACCESS_TOKEN_EXPIRY,
+    },
 
-    cloudinaray_cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
-    cloudinary_api_secret : process.env.CLOUDINARY_API_SECRET,
+    refreshToken: {
+        secret: process.env.REFRESH_TOKEN_SECRET,
+        expiry: process.env.REFRESH_TOKEN_EXPIRY,
+    },
+
+    cloudinary: {
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+    },
+
+    adminEmail: {
+        address: process.env.ADMIN_EMAIL,
+        password: process.env.ADMIN_EMAIL_PASSWORD,
+    },
+
 }
 
 export default config;

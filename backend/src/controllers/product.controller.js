@@ -3,7 +3,7 @@ import config from "../configs/config.js";
 
 const addProduct = async (req, res) => {
     try {
-        const result = await productService.add(req);
+        const result = await productService.createProductWithVariantForVendor (req);
 
         return res
             .status(200)
@@ -18,7 +18,8 @@ const addProduct = async (req, res) => {
 
 const getAllProduct = async (req, res) => {
     try {
-        const result = await productService.all(req);
+        // const result = await productService.all(req);
+        const result = await productService.getProducts(req);
 
         return res
             .status(200)
@@ -31,6 +32,22 @@ const getAllProduct = async (req, res) => {
     }
 }
 
+// const searchProducts = async (req, res) => {
+//         console.log(req.query)
+//     try {
+//         const result = await productService.search(req);
+
+//         return res
+//             .status(200)
+//             .json({ api: config.api, result, message: "products searched successfully." });
+
+//     } catch (error) {
+//         return res
+//             .status(error.statusFromService || 500)
+//             .json({ error: true, message: error.msgFromService || "server error while searching products." });
+//     }
+// }
+
 const updateProduct = async (req, res) => {
     try {
         const result = await productService.edit(req);
@@ -40,6 +57,7 @@ const updateProduct = async (req, res) => {
             .json({ api: config.api, result, message: "product updated successfully." });
 
     } catch (error) {
+        console.log(error)
         return res
             .status(500)
             .json({ error: true, message: "server error while updating product." });
@@ -76,4 +94,5 @@ const toggleActiveStatus = async (req, res) => {
     }
 }
 
+// export { addProduct, getAllProduct, updateProduct, getProductById, toggleActiveStatus, searchProducts }
 export { addProduct, getAllProduct, updateProduct, getProductById, toggleActiveStatus }

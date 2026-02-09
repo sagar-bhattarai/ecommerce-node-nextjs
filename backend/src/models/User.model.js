@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
-import { CUSTOMER, MERCHANT } from "../constants/role.constant.js";
+import { CUSTOMER, MERCHANT } from "../constants/roles.constant.js";
 import bcrypt from "bcrypt";
 import config from "../configs/config.js";
 import jwt from "jsonwebtoken";
+import userCounterModel from "./counter/userCounter.model.js";
 
 const userSchema = new mongoose.Schema(
     {
@@ -19,6 +20,11 @@ const userSchema = new mongoose.Schema(
             unique: true,
             lowercase: true,
         },
+        userCode: {
+            type: String,
+            unique: true,
+            index: true,
+        },
         userPassword: {
             type: String,
             required: [true, "Password Is Required"],
@@ -33,10 +39,10 @@ const userSchema = new mongoose.Schema(
         },
         profileImage: String,
         refreshToken: String,
-        userRole: {
-            type: String,
+        userRoles: {
+            type: [String],
             enum: [CUSTOMER, MERCHANT],
-            default: CUSTOMER,
+            default: [CUSTOMER],
         },
         isActive: {
             type: Boolean,
@@ -50,10 +56,35 @@ const userSchema = new mongoose.Schema(
     { timestamps: true },
 );
 
-userSchema.pre("save", async function () {
-    if (!this.isModified("userPassword")) return;
+userSchema.statics.generateUserCode = async function (userName) {
+    const baseCode = userName
+        .replace(/[^a-zA-Z]/g, "")
+        .substring(0, 3)
+        .toUpperCase();
 
-    this.userPassword = await bcrypt.hash(this.userPassword, 10);
+    const counter = await userCounterModel.findOneAndUpdate(
+        { key: baseCode },
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true }
+    );
+
+    return `${baseCode}-${String(counter.seq).padStart(4, "0")}`;
+};
+
+userSchema.pre("save", async function () {
+    // if (!this.isModified("userPassword")) return next();
+    // this.userPassword = await bcrypt.hash(this.userPassword, 10);
+
+
+    // hash password only if modified
+    if (this.isModified("userPassword")) {
+        this.userPassword = await bcrypt.hash(this.userPassword, 10);
+    }
+
+    // generate userCode only once
+    if (!this.userCode) {
+        this.userCode = await this.constructor.generateUserCode(this.userName);
+    }
 });
 
 
@@ -70,9 +101,9 @@ userSchema.methods.generateAccessToken = async function () {
                 _id: this._id,
                 userEmail: this.userEmail,
             },
-            config.access_token_secret,
+            config.accessToken.secret,
             {
-                expiresIn: config.access_token_expiry,
+                expiresIn: config.accessToken.expiry,
             },
         );
     } catch (error) {
@@ -86,9 +117,9 @@ userSchema.methods.generateRefreshToken = async function () {
             {
                 _id: this._id
             },
-            config.refresh_token_secret,
+            config.refreshToken.secret,
             {
-                expiresIn: config.refresh_token_expiry,
+                expiresIn: config.refreshToken.expiry,
             },
         );
     } catch (error) {

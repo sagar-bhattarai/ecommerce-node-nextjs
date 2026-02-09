@@ -1,18 +1,15 @@
 import mongoose from "mongoose";
 import SkuCounter from "../models/counter/SkuCounter.model.js";
 
-export const skuMiddleware = async function (req, res, next) {
-
-    if (this.internalSku && this.publicSku) return;
-
+export const skuGenerator = async function (productName, categoryId, supplierId ) {
     try {
         const Category = mongoose.model("Category");
         const Supplier = mongoose.model("User");
 
-        const category = await Category.findById(this.categoryId);
+        const category = await Category.findById(categoryId);
         if (!category) throw new Error("Category not found");
 
-        const supplier = await Supplier.findById(this.supplierId);
+        const supplier = await Supplier.findById(supplierId);
         if (!supplier) throw new Error("Supplier not found");
 
         const year = new Date().getFullYear();
@@ -20,8 +17,8 @@ export const skuMiddleware = async function (req, res, next) {
         const categoryCode = category.categoryCode;
         const subCode = category.subCategoryCode || null;
 
-   
-        const nameCode = this.productName
+
+        const nameCode = productName
             .replace(/[^a-zA-Z]/g, "")
             .substring(0, 3)
             .toUpperCase();
@@ -38,10 +35,12 @@ export const skuMiddleware = async function (req, res, next) {
 
         const number = String(counter.seq).padStart(4, "0");
 
-        this.internalSku = `${internalPrefix}-${number}`;
-        this.publicSku = subCode
+        const internalSku = `${internalPrefix}-${number}`;
+        const publicSku = subCode
             ? `${categoryCode}-${subCode}-${nameCode}-${number}`
             : `${categoryCode}-${nameCode}-${number}`;
+
+        return { internalSku, publicSku };
 
     } catch (err) {
         throw new Error(`SKU middleware error: ${err.message}`);
@@ -153,45 +152,3 @@ If counter does not exist yet:
 
 
 
-
-
-
-
-
-
-
-/*
-
-productSchema.pre("save", async function (next) {
-  if (this.sku) return next();
-
-  const Category = mongoose.model("Category");
-  const category = await Category.findById(this.categoryId);
-  if (!category) return next(new Error("Category not found"));
-
-  const categoryCode = category.categoryCode;
-  const subCode = category.subCategoryCode || null;
-
-  const nameCode = this.productName
-    .replace(/[^a-zA-Z]/g, "")
-    .substring(0, 3)
-    .toUpperCase();
-
-  const skuPrefix = subCode
-    ? `${categoryCode}-${subCode}-${nameCode}`
-    : `${categoryCode}-${nameCode}`;
-
-  // 🔐 Atomic counter increment
-  const counter = await SkuCounter.findOneAndUpdate(
-    { key: skuPrefix },
-    { $inc: { seq: 1 } },
-    { new: true, upsert: true }
-  );
-
-  const number = String(counter.seq).padStart(4, "0");
-  this.sku = `${skuPrefix}-${number}`;
-
-  next();
-});
-
-*/ 

@@ -3,8 +3,9 @@ import OtpModel from "../models/Otp.model.js";
 import uploadImage from "../utility/uploadImage.js";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
+import sendMail from "../utility/mail.js";
 
-const update = async (req) => {
+const edit = async (req) => {
     const user = await UserModel.findById(req.user._id);
 
     if (!user) {
@@ -25,7 +26,7 @@ const update = async (req) => {
         profileImage: url,
     }
 
-    return await UserModel.findByIdAndUpdate(req.user._id, data, { new: true }).select("-userPassword -refreshToken -createdAt -updatedAt -__v");;
+    return await UserModel.findByIdAndUpdate(req.user._id, data, { new: true }).select("-userPassword -refreshToken -createdAt -updatedAt -__v");
 }
 
 const deactivate = async (req) => {
@@ -69,11 +70,20 @@ const generateOtp = async (id) => {
             customMessage: "error while saving otp.",
         };
     }
-
-    // send otp on email 
-    // code here
-
     return otp;
+}
+
+const sendOtpOnMail = async (user) => {
+    const otp = await generateOtp(user._id)
+
+    const mailOptions = {
+        otp,
+        userEmail: user.userEmail,
+        subject: "ecommerce app",
+        text: `Your OTP is, ${otp}  \n Valid only for 5 minutes.`
+    }
+
+    await sendMail(mailOptions);
 }
 
 const verifyOtp = async (req) => {
@@ -107,4 +117,18 @@ const verifyOtp = async (req) => {
     ).select("-userPassword -refreshToken -createdAt -updatedAt -__v");
 }
 
-export default { update, deactivate, generateOtp, reset, verifyOtp }
+const editRole = async (req) => {
+    let option;
+    if (req.body.makeMerchant) {
+        option = { $addToSet: { userRoles: { $each: ["MERCHANT", "CUSTOMER"] } } }
+    } else {
+        option = { $pull: { userRoles: "MERCHANT" } }
+    }
+    return await UserModel.findByIdAndUpdate(
+        req.params.id,
+        option,
+        { new: true }
+    ).select("-userPassword -refreshToken -createdAt -updatedAt -__v");
+}
+
+export default { edit, deactivate, reset, verifyOtp, sendOtpOnMail, editRole }

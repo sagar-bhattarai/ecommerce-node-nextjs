@@ -5,7 +5,7 @@ import {HOME_ROUTE} from "../constants/routes";
 
 const Footer = () => {
   return (
-    <footer className="absolute bottom-0 w-full tracking-wide bg-gradient-to-br from-black via-black to-purple-700 px-8 sm:px-12 pt-16 pb-8">
+    <footer className="absolute- bottom-0 w-full tracking-wide bg-gradient-to-br from-black via-black to-purple-700 px-8 sm:px-12 pt-16 pb-8">
       <div className="grid min-[1200px]:grid-cols-3 gap-12 xl:gap-16">
         <div className="min-[1200px]:max-w-sm max-w-lg w-full">
           <Link href={HOME_ROUTE}>

@@ -168,10 +168,11 @@ const Header = () => {
                   </div>
                 }
               </li>
-              {navlinks.map((navlink) => (
+              {navlinks.map((navlink,index) => (
                 <Link
+                key={index}
                   href={navlink.route}
-                  className="text-slate-600 hover:text-slate-900 text-[15px] block font-medium"
+                  className="text-slate-600 hover:text-primary text-[15px] block font-medium"
                 >{navlink.label}</Link>
               ))}
             </ul>

@@ -1,3 +1,7 @@
+export const metadata = {
+  title: "login | Ecommerce",
+  description: "login | Ecommerce",
+};
 
 const login = () => {
   return (

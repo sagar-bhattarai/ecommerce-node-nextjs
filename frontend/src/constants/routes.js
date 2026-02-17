@@ -1,0 +1,11 @@
+export const HOME_ROUTE = "/";
+export const LOGIN_ROUTE = "/login";
+export const SIGN_UP_ROUTE = "/signup";
+export const FORGOT_PASSWORD_ROUTE = "/forgot-password";
+export const ABOUT_US_ROUTE = "/about-us";
+export const CONTACT_US_ROUTE = "/contact-us";
+export const PRODUCT_ROUTE = "/product";
+export const TESTINOMIALS_ROUTE = "/testinomials";
+export const SUGGESTIONS_ROUTE = "/suggestions";
+export const BLOG_ROUTE = "/blog";
+export const OFFERS_ROUTE = "/offers";

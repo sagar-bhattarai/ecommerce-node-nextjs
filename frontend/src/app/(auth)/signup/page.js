@@ -1,4 +1,7 @@
-import React from 'react'
+export const metadata = {
+  title: "signup | Ecommerce",
+  description: "signup | Ecommerce",
+};
 
 const signup = () => {
   return (

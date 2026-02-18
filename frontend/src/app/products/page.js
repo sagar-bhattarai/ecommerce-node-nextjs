@@ -1,31 +1,31 @@
-import ProductCard from "@/components/ProductCard";
-import config from "@/config/config";
-import axios from "axios";
-
+import Filter from "@/components/products/Filter";
+import Card from "@/components/products/Card";
+import { fetchAllProducts } from "@/apis/product.api";
 
 export const metadata = {
   title: "product | Ecommerce",
   description: "product | Ecommerce",
 };
 
-const fetchAllProduct = async () => {
+const getProducts = async (searchParams) => {
   try {
-    const response = await axios.get(`${config.apiUrl}/products`);
-    return response.data.result.data;
+    let products = await fetchAllProducts(searchParams);
+    return products ;
   } catch (error) {
-    console.error("Axios error:", error.response?.data);
+    throw new Error(error)
   }
-};
+}
 
-
-const productPage = async () => {
-  const products = await fetchAllProduct();
-
+const productPage = async ({ searchParams }) => {
+  const products = await getProducts(searchParams);
   return (
-    <div className="container mx-auto flex justify-center gap-2 items-center p-5">
-      {products.map((product) => (
-        <ProductCard  key={product._id} product={product}/>
-      ))}
+    <div className="max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-[1fr_4fr] px-4 xl:gap-10 lg:py-16 ">
+      <Filter />
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        {products.map((product) => (
+          <Card key={product._id} product={product} />
+        ))}
+      </section>
     </div>
   )
 }

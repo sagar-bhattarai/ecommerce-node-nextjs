@@ -16,7 +16,7 @@ const fetchProductById = async (id) => {
         console.log("products", response.data.result.product);
         return response.data.result.product;
     } catch (error) {
-        console.error("Axios error:", error.response?.data);
+        throw new Error(error.response?.data)
     }
 };
 
@@ -26,7 +26,7 @@ const productPageById = async ({ params, searchParams }) => {
     const query = await searchParams;
     const product = fetchProductById(id)
     return (
-        <div>productPageById {id}</div>
+        <div className="font-poppins">productPageById {id}</div>
     )
 }
 

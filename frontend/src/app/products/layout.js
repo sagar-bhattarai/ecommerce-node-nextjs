@@ -1,7 +1,7 @@
 
 const productLayout = ({ children }) => {
   return (
-    <div className="container mx-auto">
+    <div className="  bg-zinc-100"> {/* <div className="container mx-auto bg-gray-100"> */}
       {children}
     </div>
   )

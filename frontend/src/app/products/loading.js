@@ -1,23 +1,25 @@
+import {FaImage} from "react-icons/fa";
+
 const LoadingCard = () => {
     return (
         <div className="relative w-full max-w-[18rem] bg-neutral-primary-soft p-6 border border-default rounded-sm shadow-xs">
-            <p className="brand absolute right-[10px]" >Brand</p>
+             <div className="absolute right-[10px] rounded-xl w-15 h-6 bg-primary"></div>
             <div >
-                <div className="rounded-base mb-6 min-h-[10rem]"></div>
+                <div className="flex items-center justify-center rounded-base mb-6 bg-gray-100 min-h-[10rem]">
+                    <FaImage className="text-gray-500 text-3xl"/>
+                </div>
             </div>
             <div>
                 <div className="flex items-center space-x-3 mb-6">
-                    <span className="bg-brand-softer border border-transparent text-fg-brand-strong text-xs font-medium px-1.5 py-0.5 ">Ratings</span>
+                   <div className="w-54 h-5 bg-gray-200"></div>
                 </div>
-                <div className="flex flex-col">
-                    <div className="text-xl text-heading font-semibold tracking-tight">Product Name</div>
-                    <span className="text-xs font-medium py-0.5 ">category name</span>
+                <div className="flex flex-col gap-2">
+                    <div className="w-32 h-5 bg-gray-400"></div>
+                    <div className="w-24 h-5 bg-gray-200 py-0.5 "></div>
                 </div>
                 <div className="flex items-center justify-between mt-6">
-                    <span className="text-3xl font-extrabold text-heading">Price </span>
-                    <button type="button" className="inline-flex items-center text-white dark:text-black  hover:text-white bg-brand cursor-pointer hover:bg-primary box-border border border-gray-200 focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-full text-sm px-2 py-2 focus:outline-none">
-                        <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7H7.312" /></svg>
-                    </button>
+                    <div className="w-28 h-10 bg-gray-300"></div>
+                    <div className="w-10 h-10 rounded-full bg-primary "> </div>
                 </div>
             </div>
         </div>

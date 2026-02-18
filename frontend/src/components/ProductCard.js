@@ -8,7 +8,7 @@ const ProductCard = ({ product }) => {
   // console.log(product)
   return (
     <div className="relative w-full max-w-[18rem] bg-neutral-primary-soft p-6 border border-default rounded-sm shadow-xs">
-      <p className="brand absolute right-[10px]" >{product.brand}</p>
+      <p className="brand absolute rounded-xl text-sm right-[10px] bg-primary text-white px-3 py-0.5 " >{product.brand}</p>
       <Link href="#">
         {/* <Image className="rounded-base mb-6 min-h-[10rem]" src={product.images[0]} alt="product image"  height={300} width={200}/> */}
         <Image className="rounded-base mb-6 min-h-[10rem]" src={pimage} alt="product image" height={300} width={200} />

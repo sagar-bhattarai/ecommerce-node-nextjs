@@ -1,5 +1,6 @@
 "use client";
 
+import { PRODUCTS_ROUTE } from "@/constants/routes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -11,6 +12,8 @@ const Filter = () => {
     const router = useRouter();
     const [sort, setSort] = useState(DEFAULT_SORT);
     const [category, setCategory] = useState("");
+    const [searchByName, setSearchByName] = useState("");
+    const [brands, setBrands] = useState([]);
     const [minPrice, setMinPrice] = useState(MIN_PRICE);
     const [maxPrice, setMaxPrice] = useState(MAX_PRICE);
 
@@ -19,20 +22,53 @@ const Filter = () => {
 
         params.set("sort", sort);
         params.set("category", category);
+        params.set("name", searchByName);
+        params.set("brands", brands.join(","));
         params.set("min", minPrice);
         params.set("max", maxPrice);
 
         // router.push(`?sort=${sort}`);
         router.push(`?${params.toString()}`);
     };
+
+    const handleBrandChange = (brand) => {
+        setBrands((prev) =>
+            prev.includes(brand)
+                ? prev.filter((item) => item != brand)
+                : [...prev, brand]
+        )
+    }
+
+    const resetFilter = () => {
+        setSort(DEFAULT_SORT)
+        setCategory("")
+        setSearchByName("")
+        setBrands([])
+        setMinPrice(MIN_PRICE)
+        setMaxPrice(MAX_PRICE)
+
+        router.push(PRODUCTS_ROUTE)
+    }
     return (
         <aside className="shadow-md rounded-xl p-4">
             <h3 className="font-medium text-lg mb-2">Products Filter</h3>
+            {/* search */}
+            <div className="w-full mt-4">
+                <h4>Search:</h4>
+                <div >
+                    <input
+                        name="name"
+                        id="name"
+                        type="text"
+                        className="w-full p-1 mt-1 border border-gray-300 rounded-md"
+                        onChange={(e) => setSearchByName(e.target.value)} />
+                </div>
+            </div>
             {/* sort by */}
-            <div className="w-full">
+            <div className="w-full mt-4">
                 <h4>Sort By:</h4>
                 <select
-                    className="w-full p-1 mt-1 border border-gray-300 rounded-md"
+                    className="w-full p-1 mt-1 text-sm border border-gray-300 rounded-md"
                     name="sort"
                     id="sort"
                     onChange={(e) => setSort(e.target.value)}>
@@ -48,7 +84,7 @@ const Filter = () => {
             <div className="w-full mt-4">
                 <h4>Categories:</h4>
                 <select
-                    className="w-full p-1 mt-1 border border-gray-300 rounded-md"
+                    className="w-full p-1 mt-1 text-sm border border-gray-300 rounded-md"
                     name="category"
                     id="category"
                     onChange={(e) => setCategory(e.target.value)}>
@@ -84,11 +120,48 @@ const Filter = () => {
                         onChange={(e) => setMaxPrice(e.target.value)} />
                 </div>
             </div>
+            {/* brand */}
+            <div className="w-full mt-4">
+                <h4>Brand:</h4>
+                <div className="flex items-center gap-1 ml-1">
+                    <input
+                        name="apple"
+                        id="apple"
+                        type="checkbox"
+                        className="border border-gray-300 rounded-md"
+                        onChange={() => handleBrandChange("apple")} />
+                    <label className="text-xs text-gray-500" htmlFor="apple">Apple</label>
+                </div>
+                <div className="flex items-center gap-1 ml-1">
+                    <input
+                        name="google"
+                        id="google"
+                        type="checkbox"
+                        className="border border-gray-300 rounded-md"
+                        onChange={() => handleBrandChange("google")} />
+                    <label className="text-xs text-gray-500" htmlFor="google">Google</label>
+                </div>
+                <div className="flex items-center gap-1 ml-1">
+                    <input
+                        name="samsung"
+                        id="samsung"
+                        type="checkbox"
+                        className="border border-gray-300 rounded-md"
+                        onChange={() => handleBrandChange("samsung")} />
+                    <label className="text-xs text-gray-500" htmlFor="samsung">Samsung</label>
+                </div>
+
+            </div>
 
             <button
                 onClick={filterProducts}
-                className="bg-primary text-white w-full py-1 rounded-md mt-4 cursor-pointer hover:shadow-md">
+                className="transition duration-300 bg-primary hover:bg-purple-900 text-white w-full py-1 rounded-md mt-4 cursor-pointer hover:shadow-md">
                 Filter Products
+            </button>
+            <button
+                onClick={resetFilter}
+                className="transition duration-300 bg-red-600 hover:bg-red-700 text-white w-full py-1 rounded-md mt-2 cursor-pointer hover:shadow-md">
+                Reset Filter
             </button>
         </aside>
     );

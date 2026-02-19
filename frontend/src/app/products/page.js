@@ -19,9 +19,9 @@ const getProducts = async (searchParams) => {
 const productPage = async ({ searchParams }) => {
   const products = await getProducts(searchParams);
   return (
-    <div className="max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-[1fr_4fr] px-4 xl:gap-10 lg:py-16 ">
+    <div className="max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-[1fr_4fr] px-4 gap-1 lg:py-16 ">
       <Filter />
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1">
         {products.map((product) => (
           <Card key={product._id} product={product} />
         ))}

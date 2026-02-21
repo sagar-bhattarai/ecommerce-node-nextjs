@@ -10,7 +10,7 @@ export const metadata = {
 const login = () => {
   return (
     <div className="flex min-h-full justify-center items-center py-20 ">
-      <div className="flex justify-center items-center bg-amber-50 shadow-md rounded-md">
+      <div className="flex justify-center items-center bg-[#eaf2f2e0] shadow-md rounded-md">
         <div>
           <Image src={loginBg} height={200} width={300} alt="login" className="" />
         </div>

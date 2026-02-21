@@ -1,4 +1,4 @@
-import { HOME_ROUTE, PRODUCT_ROUTE, BLOG_ROUTE, OFFERS_ROUTE }  from "./routes";
+import { HOME_ROUTE, PRODUCTS_ROUTE, BLOG_ROUTE, OFFERS_ROUTE }  from "./routes";
 
 const navlinks = [
     // {
@@ -7,7 +7,7 @@ const navlinks = [
     // }, 
     {
         label: "Skincare",
-        route: PRODUCT_ROUTE
+        route: PRODUCTS_ROUTE
     }, 
         {
         label: "Offers",
@@ -15,7 +15,7 @@ const navlinks = [
     },
     {
         label: "Fashion",
-        route: PRODUCT_ROUTE
+        route: PRODUCTS_ROUTE
     },
     {
         label: "Blog",

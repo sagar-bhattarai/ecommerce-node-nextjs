@@ -13,12 +13,12 @@ const loginPage = () => {
 
   const submitForm = async (data) => {
     try {
-      await login(data);
-      console.log("login success")
+      const result = await login(data);
+      localStorage.setItem("refreshToken", result.data.refreshToken);
+      localStorage.setItem("accessToken", result.data.accessToken);
     } catch (error) {
-      console.log("error", error)
+      console.log("error")
     }
-
   }
 
   return (

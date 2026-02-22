@@ -1,31 +1,48 @@
+"use client";
+
 import Image from "next/image";
-import loginBg from "../../../../public/purple.png"
+import loginBg from "../../../../public/purple.png";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { login } from "@/apis/auth.api";
 
-export const metadata = {
-  title: "login | Ecommerce",
-  description: "login | Ecommerce",
-};
 
-const login = () => {
+const loginPage = () => {
+  const { register, handleSubmit } = useForm();
+  // const { name, ref, onChange, onBlur } = register("");
+
+  const submitForm = async (data) => {
+    try {
+      await login(data);
+      console.log("login success")
+    } catch (error) {
+      console.log("error", error)
+    }
+
+  }
+
   return (
-    <div className="flex min-h-full justify-center items-center py-20 ">
-      <div className="flex justify-center items-center bg-[#eaf2f2e0] shadow-md rounded-md">
-        <div>
-          <Image src={loginBg} height={200} width={300} alt="login" className="" />
-        </div>
-        <section className="p-12">
-          <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-            <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=purple&shade=700" alt="Your Company" className="mx-auto h-10 w-auto" />
-            <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-dark">Sign in to your account</h2>
+    <div className="flex min-h-full justify-center items-center">
+      <div className="flex justify-center items-center">
+        <section className="p-12  ">
+          <div className="sm:mx-auto sm:w-full sm:max-w-sm flex flex-col justify-center items-center">
+            {/* <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=purple&shade=700" alt="Your Company" className="mx-auto h-10 w-auto" /> */}
+            <Image src={loginBg} height={100} width={200} alt="login" className="" />
           </div>
 
-          <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <form action="#" method="POST" className="space-y-6">
+          <div className="sm:mx-auto sm:w-full sm:max-w-sm shadow-md p-10">
+            <h2 className="mb-10 text-center text-2xl/9 font-bold tracking-tight text-dark">Sign in to your account</h2>
+            <form onSubmit={handleSubmit(submitForm)} action="#" method="POST" className="space-y-6">
               <div>
                 <label htmlFor="email" className="block text-sm/6 font-medium text-gray-600">Email address</label>
                 <div className="mt-2">
-                  <input id="email" type="email" name="email" required autoComplete="email" className="block w-full border border-gray-300 rounded-md bg-white/5 px-3 py-1.5 text-base text-black outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-purple-500 sm:text-sm/6" />
+                  <input
+                    id="email"
+                    type="email"
+                    {...register("userEmail")}
+                    required
+                    autoComplete="email"
+                    className="block w-full border border-gray-300 rounded-md bg-white/5 px-3 py-1.5 text-base text-black outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-purple-500 sm:text-sm/6" />
                 </div>
               </div>
 
@@ -37,7 +54,13 @@ const login = () => {
                   </div>
                 </div>
                 <div className="mt-2">
-                  <input id="password" type="password" name="password" required autoComplete="current-password" className="block w-full rounded-md border border-gray-300 bg-white/5 px-3 py-1.5 text-base text-black outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-purple-500 sm:text-sm/6" />
+                  <input
+                    id="password"
+                    type="password"
+                    {...register("userPassword")}
+                    required
+                    autoComplete="current-password"
+                    className="block w-full rounded-md border border-gray-300 bg-white/5 px-3 py-1.5 text-base text-black outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-purple-500 sm:text-sm/6" />
                 </div>
               </div>
 
@@ -58,4 +81,4 @@ const login = () => {
   )
 }
 
-export default login
+export default loginPage

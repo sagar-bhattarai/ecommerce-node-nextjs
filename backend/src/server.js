@@ -5,12 +5,14 @@ import logger from "./middlewares/log.middleware.js";
 import auth from "./middlewares/auth.middleware.js";
 import roleBasedAuth from "./middlewares/roleBasedAuth.middleware.js";
 import { CUSTOMER, MERCHANT, ADMIN } from "./constants/roles.constant.js";
+import cors from "cors";
 
 process.on('unhandledRejection', (reason, promise) => {
     console.error(' #################  Error :: Global Unhandled Promise Rejection ################# ',reason);
 });
 
 const server = express();
+server.use(cors());
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(cookieParser());

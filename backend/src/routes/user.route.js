@@ -17,7 +17,8 @@ const router = express.Router();
 /** 
  * POST /api/users/register
 */
-router.post("/register",  upload.single('profileImage'), zodValidator(registerSchema), registerUser);
+// router.post("/register",  upload.single('profileImage'), zodValidator(registerSchema), registerUser);
+router.post("/register", zodValidator(registerSchema), registerUser);
 /** 
  * POST /api/users/login
 */

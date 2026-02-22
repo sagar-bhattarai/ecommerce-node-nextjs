@@ -7,3 +7,10 @@ export const login = async ({userEmail, userPassword}) => {
    );
    return response.data;
 };
+
+export const signUp = async ({userName, userEmail, userPassword, confirmPassword, userPhone, userAddress}) => {
+   const response = await axios.post(`${config.apiUrl}/users/register`, 
+      {userName, userEmail, userPassword, confirmPassword, userPhone, userAddress}
+   );
+   return response.data;
+};

@@ -31,10 +31,10 @@ const register = async (req) => {
         };
     }
 
-    const url = await uploadImage(req);
-    if (url) {
-        req.body.profileImage = url;
-    }
+    // const url = await uploadImage(req);
+    // if (url) {
+    //     req.body.profileImage = url;
+    // }
 
     const newUser = await UserModel(req.body);
     newUser.save();

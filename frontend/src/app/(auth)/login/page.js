@@ -17,20 +17,24 @@ const loginPage = () => {
       localStorage.setItem("refreshToken", result.data.refreshToken);
       localStorage.setItem("accessToken", result.data.accessToken);
     } catch (error) {
-      console.log("error")
+      if (error.response) {
+        console.log("Server error message:", error.response.data);
+      } else {
+        console.log("Axios config error:", error.message);
+      }
     }
   }
 
   return (
     <div className="flex min-h-full justify-center items-center">
       <div className="flex justify-center items-center">
-        <section className="p-12  ">
+        <section className=" m-10 ">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm flex flex-col justify-center items-center">
             {/* <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=purple&shade=700" alt="Your Company" className="mx-auto h-10 w-auto" /> */}
             <Image src={loginBg} height={100} width={200} alt="login" className="" />
           </div>
 
-          <div className="sm:mx-auto sm:w-full sm:max-w-sm shadow-md p-10">
+          <div className="sm:mx-auto sm:w-full sm:max-w-sm shadow-md p-10 bg-[#f8f8ff] rounded-md">
             <h2 className="mb-10 text-center text-2xl/9 font-bold tracking-tight text-dark">Sign in to your account</h2>
             <form onSubmit={handleSubmit(submitForm)} action="#" method="POST" className="space-y-6">
               <div>

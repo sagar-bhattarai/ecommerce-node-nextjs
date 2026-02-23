@@ -12,16 +12,21 @@ const registerPage = () => {
   const submitForm = async (data) => {
     try {
       const result = await signUp(data);
-    } catch (error) {
-      console.log("error");
+      console.log("register success");
+    } catch (error) {;
+      if (error.response) {
+        console.log("Server error message:", error.response.data);
+      }else {
+        console.log("Axios config error:", error.message);
+      }
     }
   };
 
   return (
-    <div className="flex min-h-full justify-center items-center">
-      <div className="flex justify-center items-center">
-        <section className="p-12  ">
-          <div className="sm:mx-auto sm:w-full sm:max-w-sm flex flex-col justify-center items-center">
+    <div className="flex min-h-full justify-center items-center ">
+      <div className="flex justify-center items-center ">
+        <section className="pt-2 mb-10 ">
+          <div className="flex flex-col justify-center items-center">
             {/* <img src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=purple&shade=700" alt="Your Company" className="mx-auto h-10 w-auto" /> */}
             <Image
               src={loginBg}
@@ -32,7 +37,7 @@ const registerPage = () => {
             />
           </div>
 
-          <div className="sm:mx-auto sm:w-full sm:max-w-sm shadow-md p-10">
+          <div className="shadow-md p-10  bg-[#f8f8ff] rounded-md">
             <h2 className="mb-10 text-center text-2xl/9 font-bold tracking-tight text-dark">
               Sign up your account
             </h2>
@@ -40,17 +45,17 @@ const registerPage = () => {
               onSubmit={handleSubmit(submitForm)}
               action="#"
               method="POST"
-              className="space-y-6"
+              className="space-y-6 "
             >
-              <div className="flex items-center justify-center gap-2">
-                <div>
+              <div className="flex items-center justify-center gap-5">
+                <div >
                   <label
                     htmlFor="name"
                     className="block text-sm/6 font-medium text-gray-600"
                   >
                     Name
                   </label>
-                  <div className="mt-2">
+                  <div className="mt-2 min-w-80">
                     <input
                       id="name"
                       type="name"
@@ -68,7 +73,7 @@ const registerPage = () => {
                   >
                     Email address
                   </label>
-                  <div className="mt-2">
+                  <div className="mt-2 min-w-80">
                     <input
                       id="email"
                       type="email"
@@ -81,7 +86,7 @@ const registerPage = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center gap-5">
                 <div>
                   <div className="flex items-center justify-between">
                     <label
@@ -91,7 +96,7 @@ const registerPage = () => {
                       Password
                     </label>
                   </div>
-                  <div className="mt-2">
+                  <div className="mt-2 min-w-80">
                     <input
                       id="password"
                       type="password"
@@ -111,7 +116,7 @@ const registerPage = () => {
                       Confirm Password
                     </label>
                   </div>
-                  <div className="mt-2">
+                  <div className="mt-2 min-w-80">
                     <input
                       id="confirm_password"
                       type="password"
@@ -124,7 +129,7 @@ const registerPage = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center gap-5">
                 <div>
                   <div className="flex items-center justify-between">
                     <label
@@ -134,7 +139,7 @@ const registerPage = () => {
                       Phone Number
                     </label>
                   </div>
-                  <div className="mt-2">
+                  <div className="mt-2 min-w-80">
                     <input
                       id="phone"
                       type="text"
@@ -152,7 +157,7 @@ const registerPage = () => {
                   >
                     Address
                   </label>
-                  <div className="mt-2">
+                  <div className="mt-2 min-w-80">
                     <input
                       id="address"
                       type="address"

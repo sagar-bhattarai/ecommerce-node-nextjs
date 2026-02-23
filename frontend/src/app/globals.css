@@ -1,25 +1,25 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --darkBackground: #0f001ded;
+  --lightBackground: #a8b7b7e0;
   --primary: #8200db;
-  --secondary: #2fd031;
+  --gray: #ac95b6;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-darkBackground: var(--darkBackground);
+  --color-lightBackground: var(--lightBackground);
   --color-primary: var(--primary);
-  --color-secondary: var(--secondary);
+  --color-gray: var(--gray);
   --font-poppins: var(--font-poppins);
 }
 
 /* 
   @media (prefers-color-scheme: dark) {
     :root {
-      --background: #0a0a0a;
-      --foreground: #ededed;
+      --darkBackground: #0a0a0a;
+      --lightBackground: #ededed;
     }
   } 
 */
@@ -28,10 +28,11 @@
 
 /* ---------- basic custom class dark mode tailwind ---------- */
 @custom-variant dark (&:where(.dark, .dark *));
+@custom-variant light (&:where(.light, .light *));
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  /* background: var(--darkBackground); */
+  /* color: #fff; */
   font-family: "Poppins", sans-serif;
 }
 

@@ -12,5 +12,6 @@ export const signUp = async ({userName, userEmail, userPassword, confirmPassword
    const response = await axios.post(`${config.apiUrl}/users/register`, 
       {userName, userEmail, userPassword, confirmPassword, userPhone, userAddress}
    );
-   return response.data;
+   console.log("response:", response)
+   return response;
 };

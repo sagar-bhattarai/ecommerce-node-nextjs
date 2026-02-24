@@ -3,13 +3,23 @@ import { useState } from "react"
 import Link from 'next/link';
 import { HOME_ROUTE, LOGIN_ROUTE, SIGN_UP_ROUTE } from "../constants/routes";
 import navlinks from "@/constants/navlinks";
+import { WiDaySunny } from "react-icons/wi";
+import { GiNightSky } from "react-icons/gi";
+import { useDispatch, useSelector } from "react-redux";
+import { toggleTheme } from "@/redux/userPreference/userPreferencesSlice"
 
 
 const Header = () => {
-
+  const dispatch = useDispatch();
+  const state = useSelector((state) => state.userPreferences);
   const [toggle, setToggle] = useState(false)
+
   const toggleMegaMenu = () => {
     setToggle(!toggle);
+  }
+
+  const toggleMode = () => {
+    dispatch(toggleTheme())
   }
   return (
     <header className="shadow-md dark:bg-[#330d57] dark:text-gray light:bg-white tracking-wide z-50 !sticky top-0">
@@ -87,74 +97,74 @@ const Header = () => {
                       <div className="grid lg:grid-cols-4 gap-6 w-full">
 
                         <div>
-                          <h6 className="dark:text-gray text-slate-900 text-base font-semibold mb-4 ">Men's Fashion</h6>
+                          <h6 className="dark:text-primary text-slate-900 text-base font-semibold mb-4 ">Men's Fashion</h6>
                           <ul className="space-y-4">
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">T-Shirts</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">T-Shirts</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Shirts</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Shirts</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Jeans</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Jeans</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Shoes</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Shoes</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Jackets</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Jackets</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Watches</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Watches</Link></li>
                           </ul>
                         </div>
 
                         <div>
-                          <h6 className="dark:text-gray text-slate-900 text-base font-semibold mb-4">Women's Fashion</h6>
+                          <h6 className="dark:text-primary text-slate-900 text-base font-semibold mb-4">Women's Fashion</h6>
                           <ul className="space-y-4">
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Dresses</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Dresses</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Tops & Blouses</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Tops & Blouses</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Handbags</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Handbags</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Heels</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Heels</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Skirts</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Skirts</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Jewelry</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Jewelry</Link></li>
                           </ul>
                         </div>
 
                         <div>
-                          <h6 className="dark:text-gray text-slate-900 text-base font-semibold mb-4">Electronics</h6>
+                          <h6 className="dark:text-primary text-slate-900 text-base font-semibold mb-4">Electronics</h6>
                           <ul className="space-y-4">
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Smartphones</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Smartphones</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Laptops</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Laptops</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Smart Watches</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Smart Watches</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Headphones</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Headphones</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Cameras</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Cameras</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Accessories</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Accessories</Link></li>
                           </ul>
                         </div>
 
                         <div>
-                          <h6 className="dark:text-gray text-slate-900 text-base font-semibold mb-4">Home & Living</h6>
+                          <h6 className="dark:text-primary text-slate-900 text-base font-semibold mb-4">Home & Living</h6>
                           <ul className="space-y-4">
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Furniture</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Furniture</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Lighting</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Lighting</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Decor</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Decor</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Kitchenware</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Kitchenware</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Bedding</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Bedding</Link></li>
                             <li><Link href="javascript:void(0)"
-                              className="dark:text-gray text-slate-500 hover:text-slate-900 text-sm font-medium">Storage</Link></li>
+                              className="dark:text-gray text-slate-500 text-base dark:hover:text-primary hover:text-slate-900 text-sm font-medium">Storage</Link></li>
                           </ul>
                         </div>
 
@@ -168,9 +178,9 @@ const Header = () => {
                   </div>
                 }
               </li>
-              {navlinks.map((navlink,index) => (
+              {navlinks.map((navlink, index) => (
                 <Link
-                key={index}
+                  key={index}
                   href={navlink.route}
                   className="dark:text-gray text-slate-600 hover:text-primary text-[15px] block font-medium"
                 >{navlink.label}</Link>
@@ -179,8 +189,8 @@ const Header = () => {
           </div>
 
 
-          <div className="space-x-4 flex items-center ml-auto">
-            dark/day mode
+          <div className="flex items-center ml-auto cursor-pointer">
+            {state.theme == "dark" ? <WiDaySunny onClick={toggleMode} className="w-6 h-6" /> : <GiNightSky onClick={toggleMode} className="w-6  h-6" />}
           </div>
         </div>
       </div>

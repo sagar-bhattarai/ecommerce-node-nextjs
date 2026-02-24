@@ -63,56 +63,56 @@ const Footer = () => {
 
         <div className="min-[1200px]:col-span-2 grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           <div>
-            <h4 className="text-white font-medium text-base">Categories</h4>
+            <h4 className="dark:text-primary text-white font-medium text-base">Categories</h4>
             <ul className="mt-6 space-y-4">
               <li>
-                <Link href='javascript:void(0)' className="hover:text-white text-slate-400 text-sm font-normal">Electronics</Link>
+                <Link href='javascript:void(0)' className="hover:text-primary text-slate-400 text-sm font-normal">Electronics</Link>
               </li>
               <li>
-                <Link href='javascript:void(0)' className="hover:text-white text-slate-400 text-sm font-normal">Home & Living</Link>
+                <Link href='javascript:void(0)' className="hover:text-primary text-slate-400 text-sm font-normal">Home & Living</Link>
               </li>
               <li>
-                <Link href='javascript:void(0)' className="hover:text-white text-slate-400 text-sm font-normal">Men's Fashion</Link>
+                <Link href='javascript:void(0)' className="hover:text-primary text-slate-400 text-sm font-normal">Men's Fashion</Link>
               </li>
               <li>
-                <Link href='javascript:void(0)' className="hover:text-white text-slate-400 text-sm font-normal">Women's Fashion</Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-white font-medium text-base">More</h4>
-            <ul className="space-y-4 mt-6">
-              <li>
-                <Link href='javascript:void(0)' className="hover:text-white text-slate-400 text-sm font-normal">Blog</Link>
-              </li>
-              <li>
-                <Link href='javascript:void(0)' className="hover:text-white text-slate-400 text-sm font-normal">Offers</Link>
-              </li>
-              <li>
-                <Link href='javascript:void(0)' className="hover:text-white text-slate-400 text-sm font-normal">Skincare</Link>
-              </li>
-              <li>
-                <Link href='javascript:void(0)' className="hover:text-white text-slate-400 text-sm font-normal">Health & Hygiene</Link>
+                <Link href='javascript:void(0)' className="hover:text-primary text-slate-400 text-sm font-normal">Women's Fashion</Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-white font-medium text-base">Information</h4>
+            <h4 className="dark:text-primary text-white font-medium text-base">More</h4>
+            <ul className="space-y-4 mt-6">
+              <li>
+                <Link href='javascript:void(0)' className="hover:text-primary text-slate-400 text-sm font-normal">Blog</Link>
+              </li>
+              <li>
+                <Link href='javascript:void(0)' className="hover:text-primary text-slate-400 text-sm font-normal">Offers</Link>
+              </li>
+              <li>
+                <Link href='javascript:void(0)' className="hover:text-primary text-slate-400 text-sm font-normal">Skincare</Link>
+              </li>
+              <li>
+                <Link href='javascript:void(0)' className="hover:text-primary text-slate-400 text-sm font-normal">Health & Hygiene</Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="dark:text-primary text-white font-medium text-base">Information</h4>
 
             <ul className="space-y-4 mt-6">
               <li>
-                <Link href='javascript:void(0)' className="hover:text-white text-slate-400 text-sm font-normal">About us</Link>
+                <Link href='javascript:void(0)' className="hover:text-primary text-slate-400 text-sm font-normal">About us</Link>
               </li>
               <li>
-                <Link href='javascript:void(0)' className="hover:text-white text-slate-400 text-sm font-normal">Contact Us</Link>
+                <Link href='javascript:void(0)' className="hover:text-primary text-slate-400 text-sm font-normal">Contact Us</Link>
               </li>
               <li>
-                <Link href='javascript:void(0)' className="hover:text-white text-slate-400 text-sm font-normal">Suggestion</Link>
+                <Link href='javascript:void(0)' className="hover:text-primary text-slate-400 text-sm font-normal">Suggestion</Link>
               </li>
               <li>
-                <Link href='javascript:void(0)' className="hover:text-white text-slate-400 text-sm font-normal">Testinomials</Link>
+                <Link href='javascript:void(0)' className="hover:text-primary text-slate-400 text-sm font-normal">Testinomials</Link>
               </li>
             </ul>
           </div>
@@ -124,13 +124,13 @@ const Footer = () => {
       <div className="flex flex-wrap max-md:flex-col gap-4">
         <ul className="md:flex md:space-x-6 max-md:space-y-4">
           <li>
-            <Link href='javascript:void(0)' className="hover:text-white text-slate-400 text-sm font-normal">Terms of Service</Link>
+            <Link href='javascript:void(0)' className="hover:text-primary text-slate-400 text-sm font-normal">Terms of Service</Link>
           </li>
           <li>
-            <Link href='javascript:void(0)' className="hover:text-white text-slate-400 text-sm font-normal">Privacy Policy</Link>
+            <Link href='javascript:void(0)' className="hover:text-primary text-slate-400 text-sm font-normal">Privacy Policy</Link>
           </li>
           <li>
-            <Link href='javascript:void(0)' className="hover:text-white text-slate-400 text-sm font-normal">Security</Link>
+            <Link href='javascript:void(0)' className="hover:text-primary text-slate-400 text-sm font-normal">Security</Link>
           </li>
         </ul>
 

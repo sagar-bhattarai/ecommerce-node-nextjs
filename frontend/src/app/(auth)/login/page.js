@@ -34,8 +34,8 @@ const loginPage = () => {
             <Image src={loginBg} height={100} width={200} alt="login" className="" />
           </div>
 
-          <div className="sm:mx-auto sm:w-full sm:max-w-sm shadow-md p-10 bg-[#f8f8ff] rounded-md">
-            <h2 className="mb-10 text-center text-2xl/9 font-bold tracking-tight text-dark">Sign in to your account</h2>
+          <div className="sm:mx-auto sm:w-full sm:max-w-sm shadow-md p-10 dark:bg-[#0e041a] light:bg-[#f8f8ff] rounded-md">
+            <h2 className="mb-10 text-center text-2xl/9 font-bold tracking-tight dark:text-gray-600 light:text-dark">Sign in to your account</h2>
             <form onSubmit={handleSubmit(submitForm)} action="#" method="POST" className="space-y-6">
               <div>
                 <label htmlFor="email" className="block text-sm/6 font-medium text-gray-600">Email address</label>
@@ -46,7 +46,7 @@ const loginPage = () => {
                     {...register("userEmail")}
                     required
                     autoComplete="email"
-                    className="block w-full border border-gray-300 rounded-md bg-white/5 px-3 py-1.5 text-base text-black outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-purple-500 sm:text-sm/6" />
+                    className="dark:text-gray-600 light:text-dark block w-full border dark:border-gray light:border-gray-300 rounded-md bg-white/5 px-3 py-1.5 text-base light:text-black outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-purple-500 sm:text-sm/6" />
                 </div>
               </div>
 
@@ -64,12 +64,12 @@ const loginPage = () => {
                     {...register("userPassword")}
                     required
                     autoComplete="current-password"
-                    className="block w-full rounded-md border border-gray-300 bg-white/5 px-3 py-1.5 text-base text-black outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-purple-500 sm:text-sm/6" />
+                    className="dark:text-gray-600 light:text-dark block w-full rounded-md border dark:border-gray light:border-gray-300 bg-white/5 px-3 py-1.5 text-base text-black outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-purple-500 sm:text-sm/6" />
                 </div>
               </div>
 
               <div>
-                <button type="submit" className="flex w-full justify-center rounded-md bg-primary cursor-pointer px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-purple-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500">Sign in</button>
+                <button type="submit" className="flex w-full justify-center rounded-md bg-primary cursor-pointer px-3 py-1.5 text-sm/6 font-semibold dark:text-black light:text-white  hover:bg-purple-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500">Sign in</button>
               </div>
             </form>
 

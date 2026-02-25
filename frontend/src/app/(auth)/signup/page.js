@@ -6,20 +6,25 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { signUp } from "@/apis/auth.api";
 
+import { useDispatch, useSelector } from "react-redux";
+import { signUpUser } from "@/redux/auth/authActions";
+import { FaSpinner } from "react-icons/fa";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
+
 const registerPage = () => {
   const { register, handleSubmit } = useForm();
+  const dispatch = useDispatch();
+  // const { loading, error, user } = useSelector(state => state.auth);
 
-  const submitForm = async (data) => {
-    try {
-      const result = await signUp(data);
-      console.log("register success");
-    } catch (error) {;
-      if (error.response) {
-        console.log("Server error message:", error.response.data);
-      }else {
-        console.log("Axios config error:", error.message);
-      }
+  useEffect(()=>{
+    if(error){
+      toast.error(error?.message);
     }
+  },[error]);
+
+  const submitForm = (data) => {
+    dispatch(signUpUser(data));
   };
 
   return (
@@ -173,9 +178,10 @@ const registerPage = () => {
               <div>
                 <button
                   type="submit"
-                  className="flex w-full justify-center rounded-md bg-primary cursor-pointer px-3 py-1.5 text-sm/6 font-semibold dark:text-black light:text-white hover:bg-purple-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
+                  disabled={loading}
+                  className="disabled:opacity-50 flex items-center justify-center gap-2 w-full rounded-md bg-primary cursor-pointer px-3 py-1.5 text-sm/6 font-semibold dark:text-black light:text-white hover:bg-purple-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500"
                 >
-                  Sign Up
+                  Sign Up {loading && <FaSpinner className="animate-spin"/> }
                 </button>
               </div>
             </form>

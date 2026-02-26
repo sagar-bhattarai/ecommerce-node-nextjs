@@ -4,25 +4,27 @@ import Image from "next/image";
 import loginBg from "../../../../public/purple.png";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { login } from "@/apis/auth.api";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "@/redux/auth/authActions";
+import { FaSpinner } from "react-icons/fa";
+import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 
 const loginPage = () => {
-  const { register, handleSubmit } = useForm();
   // const { name, ref, onChange, onBlur } = register("");
+  const { register, handleSubmit } = useForm();
+  const dispatch = useDispatch();
+  const { loading, error, user } = useSelector(state => state.auth);
 
-  const submitForm = async (data) => {
-    try {
-      const result = await login(data);
-      localStorage.setItem("refreshToken", result.data.refreshToken);
-      localStorage.setItem("accessToken", result.data.accessToken);
-    } catch (error) {
-      if (error.response) {
-        console.log("Server error message:", error.response.data);
-      } else {
-        console.log("Axios config error:", error.message);
-      }
+  useEffect(()=>{
+    if(error){
+      toast.error(error?.message);
     }
+  },[error]);
+
+  const submitForm = (data) => {
+    dispatch(loginUser(data));
   }
 
   return (
@@ -69,7 +71,12 @@ const loginPage = () => {
               </div>
 
               <div>
-                <button type="submit" className="flex w-full justify-center rounded-md bg-primary cursor-pointer px-3 py-1.5 text-sm/6 font-semibold dark:text-black light:text-white  hover:bg-purple-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500">Sign in</button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="disabled:opacity-50 flex w-full items-center justify-center gap-2 rounded-md bg-primary cursor-pointer px-3 py-1.5 text-sm/6 font-semibold dark:text-black light:text-white  hover:bg-purple-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500">
+                  Sign in {loading && <FaSpinner className="animate-spin"/> }
+                </button>
               </div>
             </form>
 

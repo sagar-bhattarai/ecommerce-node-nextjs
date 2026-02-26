@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { login } from "@/apis/auth.api";
+import { login,signUp } from "@/apis/auth.api";
 
 /*
     Thunk Actions has 3 states:

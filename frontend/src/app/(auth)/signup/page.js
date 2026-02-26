@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 const registerPage = () => {
   const { register, handleSubmit } = useForm();
   const dispatch = useDispatch();
-  // const { loading, error, user } = useSelector(state => state.auth);
+  const { loading, error, user } = useSelector(state => state.auth);
 
   useEffect(()=>{
     if(error){

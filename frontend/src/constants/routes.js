@@ -2,6 +2,7 @@ export const HOME_ROUTE = "/";
 export const LOGIN_ROUTE = "/login";
 export const SIGN_UP_ROUTE = "/signup";
 export const FORGOT_PASSWORD_ROUTE = "/forgot-password";
+export const PROFILE_ROUTE = "/profile";
 export const ABOUT_US_ROUTE = "/about-us";
 export const CONTACT_US_ROUTE = "/contact-us";
 export const PRODUCTS_ROUTE = "/products";

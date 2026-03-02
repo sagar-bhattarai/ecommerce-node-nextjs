@@ -13,11 +13,9 @@ import User from "./User";
 const Header = () => {
   const dispatch = useDispatch();
   const state = useSelector((state) => state);
-  const user = state.auth.user?.data.data;
+  const user = state.auth.user?.data.data || state.auth.user?.data.loggedInUser
   const [toggle, setToggle] = useState(false);
   const [show, setShow] = useState(false);
-
-    console.log("state",state)
 
   const toggleMegaMenu = () => {
     setToggle(!toggle);
@@ -82,7 +80,7 @@ const Header = () => {
               <h4>{user?.userName}</h4>
               <button
                 onClick={() => setShow(!show)}
-                className="cursor-pointer border-2 rounded-full h-9 w-9 flex justify-center items-center hover:bg-primary"
+                className="cursor-pointer border-2 rounded-full h-9 w-9 flex justify-center items-center hover:bg-primary light:hover:text-white"
               >
                 <FaUser />
               </button>
@@ -409,7 +407,7 @@ const Header = () => {
             </ul>
           </div>
 
-          <div className="flex items-center ml-auto cursor-pointer">
+          <div className="flex items-center ml-auto cursor-pointer border-none rounded-full shadow hover:shadow-purple-600">
             {state.userPreferences.theme == "dark" ? (
               <WiDaySunny onClick={toggleMode} className="w-6 h-6" />
             ) : (

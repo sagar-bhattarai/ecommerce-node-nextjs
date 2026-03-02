@@ -11,6 +11,7 @@ import { signUpUser } from "@/redux/auth/authActions";
 import { FaSpinner } from "react-icons/fa";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import PasswordInput from "@/components/PasswordInput";
 
 const registerPage = () => {
   const { register, handleSubmit } = useForm();
@@ -64,6 +65,7 @@ const registerPage = () => {
                     <input
                       id="name"
                       type="name"
+                       placeholder="Enter your name"
                       {...register("userName")}
                       required
                       autoComplete="name"
@@ -82,6 +84,7 @@ const registerPage = () => {
                     <input
                       id="email"
                       type="email"
+                      placeholder="youremail@mail.com"
                       {...register("userEmail")}
                       required
                       autoComplete="email"
@@ -102,14 +105,7 @@ const registerPage = () => {
                     </label>
                   </div>
                   <div className="mt-2 min-w-80">
-                    <input
-                      id="password"
-                      type="password"
-                      {...register("userPassword")}
-                      required
-                      autoComplete="current-password"
-                      className="dark:text-gray-600 light:text-dark block w-full rounded-md border dark:border-gray light:border-gray-300 bg-white/5 px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-purple-500 sm:text-sm/6"
-                    />
+                    <PasswordInput placeholder="Enter your password" id="password" {...register("userPassword")}/>
                   </div>
                 </div>
                 <div>
@@ -122,14 +118,7 @@ const registerPage = () => {
                     </label>
                   </div>
                   <div className="mt-2 min-w-80">
-                    <input
-                      id="confirm_password"
-                      type="password"
-                      {...register("confirmPassword")}
-                      required
-                      autoComplete="current-password"
-                      className="dark:text-gray-600 light:text-dark block w-full rounded-md border dark:border-gray light:border-gray-300 bg-white/5 px-3 py-1.5 text-base outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-purple-500 sm:text-sm/6"
-                    />
+                    <PasswordInput placeholder="Re-type your password" id="confirm_password" {...register("confirmPassword")}/>
                   </div>
                 </div>
               </div>
@@ -148,6 +137,7 @@ const registerPage = () => {
                     <input
                       id="phone"
                       type="text"
+                       placeholder="Enter your phone number"
                       {...register("userPhone")}
                       required
                       autoComplete="phone"
@@ -166,6 +156,7 @@ const registerPage = () => {
                     <input
                       id="address"
                       type="address"
+                       placeholder="Enter your address"
                       {...register("userAddress")}
                       required
                       autoComplete="address"

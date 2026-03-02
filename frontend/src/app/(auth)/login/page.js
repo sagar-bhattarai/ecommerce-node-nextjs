@@ -9,6 +9,7 @@ import { loginUser } from "@/redux/auth/authActions";
 import { FaSpinner } from "react-icons/fa";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import PasswordInput from "@/components/PasswordInput"
 
 
 const loginPage = () => {
@@ -17,11 +18,11 @@ const loginPage = () => {
   const dispatch = useDispatch();
   const { loading, error, user } = useSelector(state => state.auth);
 
-  useEffect(()=>{
-    if(error){
+  useEffect(() => {
+    if (error) {
       toast.error(error?.message);
     }
-  },[error]);
+  }, [error]);
 
   const submitForm = (data) => {
     dispatch(loginUser(data));
@@ -45,6 +46,7 @@ const loginPage = () => {
                   <input
                     id="email"
                     type="email"
+                    placeholder="youremail@mail.com"
                     {...register("userEmail")}
                     required
                     autoComplete="email"
@@ -60,13 +62,7 @@ const loginPage = () => {
                   </div>
                 </div>
                 <div className="mt-2">
-                  <input
-                    id="password"
-                    type="password"
-                    {...register("userPassword")}
-                    required
-                    autoComplete="current-password"
-                    className="dark:text-gray-600 light:text-dark block w-full rounded-md border dark:border-gray light:border-gray-300 bg-white/5 px-3 py-1.5 text-base text-black outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-purple-500 sm:text-sm/6" />
+                  <PasswordInput placeholder="Enter your password" id="password" {...register("userPassword")} />
                 </div>
               </div>
 
@@ -75,7 +71,7 @@ const loginPage = () => {
                   type="submit"
                   disabled={loading}
                   className="disabled:opacity-50 flex w-full items-center justify-center gap-2 rounded-md bg-primary cursor-pointer px-3 py-1.5 text-sm/6 font-semibold dark:text-black light:text-white  hover:bg-purple-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-500">
-                  Sign in {loading && <FaSpinner className="animate-spin"/> }
+                  Sign in {loading && <FaSpinner className="animate-spin" />}
                 </button>
               </div>
             </form>

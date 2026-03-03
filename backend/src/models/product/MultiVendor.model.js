@@ -5,7 +5,8 @@ const multiVendorSchema = new mongoose.Schema(
   {
     vendorId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
-    variantId: { type: mongoose.Schema.Types.ObjectId, ref: "ProductVariant", required: true },
+    // variantId: { type: mongoose.Schema.Types.ObjectId, ref: "ProductVariant", required: true },
+    variantId: { type: mongoose.Schema.Types.ObjectId, ref: "ProductVariant"},
 
     publicSku: { type: String, required: true },
 

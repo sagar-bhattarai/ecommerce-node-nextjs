@@ -9,6 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { toggleTheme } from "@/redux/userPreference/userPreferencesSlice";
 import { FaUser } from "react-icons/fa";
 import User from "./User";
+import logo from "../../public/logo.png";
+import Image from "next/image";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -67,10 +69,13 @@ const Header = () => {
         </div>
 
         <Link href={HOME_ROUTE}>
-          <img
-            src="https://readymadeui.com/readymadeui.svg"
+          <Image
+            // src="https://readymadeui.com/readymadeui.svg"
+            src={logo}
             alt="logo"
-            className="md:w-[150px] w-[134px]"
+            className="md:w-[50px] w-[50x]"
+            height={50}
+            width={50}
           />
         </Link>
 

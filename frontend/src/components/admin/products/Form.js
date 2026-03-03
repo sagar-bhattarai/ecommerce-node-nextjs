@@ -22,8 +22,8 @@ const ProductForm = () => {
   const onDrop = useCallback((acceptedFiles) => {
     const images = acceptedFiles.map((file) => (
       {
-        // file, // keep original File
-        ...file,
+        file, // keep original File
+        // ...file,
         url: URL.createObjectURL(file),
         name: file.name,
         size: file.size,
@@ -45,7 +45,7 @@ const ProductForm = () => {
     formData.append("productName", data.name);
     formData.append("brand", data.brand);
     formData.append("categoryId", data.category);
-    formData.append("supplierId", user._id);
+    formData.append("supplierId", user?._id);
     formData.append("productPrice", parseInt(data.price) || 0);
     formData.append("productStock", parseInt(data.stock) || 1);
 
@@ -64,8 +64,15 @@ const ProductForm = () => {
         toast.success("Produt created successfully");
         router.back();
       })
-      .catch((error) => toast.error(error))
-      .finally(setLoading(false));
+      .catch((error) => {
+        if (error.message == "Request failed with status code 401") {
+          toast.error("please login");
+        } else {
+          // console.log("error", error);
+          toast.error(error.message)
+        }
+      })
+      .finally(() => setLoading(false));
   };
 
   return (

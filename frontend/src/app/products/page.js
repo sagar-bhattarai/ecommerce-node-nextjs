@@ -9,14 +9,13 @@ export const metadata = {
 
 const getProducts = async (searchParams) => {
   try {
-    let products = await fetchAllProducts(searchParams);
-    return products ;
+    return await fetchAllProducts(searchParams);
   } catch (error) {
     throw new Error(error)
   }
 }
 
-const productPage = async ({ searchParams }) => {
+const productPage = async ({ ...searchParams }) => {
   const products = await getProducts(searchParams);
   return (
     <div className="max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-[1fr_4fr] px-4 gap-1 lg:py-16 ">

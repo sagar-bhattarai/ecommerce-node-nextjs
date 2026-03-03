@@ -7,63 +7,81 @@ import { validateCategoryAttributes } from "../utility/validateCategoryAttribute
 import mongoose from "mongoose";
 
 const createProductWithVariantForVendor = async (req) => {
-    const {
-        productName,
-        productDescription,
-        categoryId,
-        brand,
-        attributes,
-        productPrice,
-        oldPrice,
-        productStock,
-    } = req.body;
+  const {
+    productName,
+    productDescription,
+    categoryId,
+    brand,
+    attributes,
+    productPrice,
+    oldPrice,
+    productStock,
+  } = req.body;
 
-    const vendorId = req.user._id;
+  const vendorId = req.user._id;
 
-    const category = await CategoryModel.findById(categoryId);
-    if (!category) throw new Error("Invalid category");
+  const category = await CategoryModel.findById(categoryId);
+  if (!category) throw new Error("Invalid category");
 
-    validateCategoryAttributes(category, attributes);
+  const { internalSku, publicSku } = await skuGenerator(
+    productName,
+    categoryId,
+    vendorId
+  );
 
-    let product = await ProductModel.findOne({ productName, categoryId });
-    if (!product) {
-        product = await ProductModel.create({
-            productName,
-            productDescription,
-            categoryId,
-            brand,
-        });
-    }
+  let product = await ProductModel.findOne({ productName, categoryId });
 
+  if (!product) {
+    product = await ProductModel.create({
+      productName,
+      productDescription,
+      categoryId,
+      brand,
+    });
+  }
 
-    const { internalSku, publicSku } = await skuGenerator(productName, categoryId, vendorId);
+  const parsedAttributes = attributes ? JSON.parse(attributes) : null;
+
+  if (parsedAttributes) {
+    validateCategoryAttributes(category, parsedAttributes);
 
     let variant = await ProductVariantModel.findOne({
-        productId: product._id,
-        internalSku,
-        attributes,
+      productId: product._id,
+      internalSku,
+      attributes: parsedAttributes,
     });
 
-
     if (!variant) {
-        variant = await ProductVariantModel.create({
-            productId: product._id,
-            internalSku,
-            attributes,
-            // shipping
-        });
+      variant = await ProductVariantModel.create({
+        productId: product._id,
+        internalSku,
+        attributes: parsedAttributes,
+      });
     }
 
     const listing = await MultiVendorModel.create({
-        vendorId,
-        productId: product._id,
-        variantId: variant._id,
-        publicSku,
-        productPrice,
-        oldPrice,
-        productStock,
+      vendorId,
+      productId: product._id,
+      variantId: variant._id,
+      publicSku,
+      productPrice,
+      oldPrice,
+      productStock,
     });
+
     return { product, variant, listing };
+  }
+
+  const listing = await MultiVendorModel.create({
+    vendorId,
+    productId: product._id,
+    publicSku,
+    productPrice,
+    oldPrice,
+    productStock,
+  });
+
+  return { product, listing };
 };
 
 // const search = async (req) => {
@@ -268,83 +286,83 @@ const createProductWithVariantForVendor = async (req) => {
 // };
 
 const single = async (id) => {
-    // 1. product
-    const product = await ProductModel.findOne({
-        _id: id,
-        isActive: true
-    }).lean();
+  // 1. product
+  const product = await ProductModel.findOne({
+    _id: id,
+    isActive: true
+  }).lean();
 
-    if (!product) {
-        return res.status(404).json({ message: "Product not found" });
-    }
+  if (!product) {
+    return res.status(404).json({ message: "Product not found" });
+  }
 
-    // 2. variants
-    const variants = await ProductVariantModel.find({
-        productId: product._id
-    }).lean();
+  // 2. variants
+  const variants = await ProductVariantModel.find({
+    productId: product._id
+  }).lean();
 
-    // 3. vendor listings
-    const variantIds = variants.map(v => v._id);
+  // 3. vendor listings
+  const variantIds = variants.map(v => v._id);
 
-    const listings = await MultiVendorModel.find({
-        variantId: { $in: variantIds },
-        isActive: true
-    }).lean();
+  const listings = await MultiVendorModel.find({
+    variantId: { $in: variantIds },
+    isActive: true
+  }).lean();
 
-    // 4. group listings by variant
-    const listingMap = {};
-    listings.forEach(l => {
-        const key = l.variantId.toString();
-        if (!listingMap[key]) listingMap[key] = [];
-        listingMap[key].push({
-            vendorId: l.vendorId,
-            price: l.price,
-            stock: l.stock
-        });
+  // 4. group listings by variant
+  const listingMap = {};
+  listings.forEach(l => {
+    const key = l.variantId.toString();
+    if (!listingMap[key]) listingMap[key] = [];
+    listingMap[key].push({
+      vendorId: l.vendorId,
+      price: l.price,
+      stock: l.stock
     });
+  });
 
-    // 5. attach listings + cheapest price
-    const finalVariants = variants.map(v => {
-        const vendorList = listingMap[v._id.toString()] || [];
-        const prices = vendorList.map(l => l.price);
-
-        return {
-            _id: v._id,
-            sku: v.internalSku,
-            attributes: v.attributes,
-            vendors: vendorList,
-            cheapestPrice: prices.length ? Math.min(...prices) : null
-        };
-    });
+  // 5. attach listings + cheapest price
+  const finalVariants = variants.map(v => {
+    const vendorList = listingMap[v._id.toString()] || [];
+    const prices = vendorList.map(l => l.price);
 
     return {
-        product,
-        variants: finalVariants
+      _id: v._id,
+      sku: v.internalSku,
+      attributes: v.attributes,
+      vendors: vendorList,
+      cheapestPrice: prices.length ? Math.min(...prices) : null
     };
+  });
+
+  return {
+    product,
+    variants: finalVariants
+  };
 };
 
 const toggle = async (productId) => {
-    const updated = await ProductModel.findIdAndUpdate(
-        { _id: productId },
-        [
-            {
-                $set: {
-                    isActive: { $not: "$isActive" },
-                    lastStatusChangeAt: new Date(),
-                },
-            },
-        ],
-        { new: true, updatePipeline: true },
-    );
+  const updated = await ProductModel.findIdAndUpdate(
+    { _id: productId },
+    [
+      {
+        $set: {
+          isActive: { $not: "$isActive" },
+          lastStatusChangeAt: new Date(),
+        },
+      },
+    ],
+    { new: true, updatePipeline: true },
+  );
 
-    if (!updated) {
-        throw {
-            statusFromService: 400,
-            msgFromService: "Product not found for given id.",
-        };
-    }
+  if (!updated) {
+    throw {
+      statusFromService: 400,
+      msgFromService: "Product not found for given id.",
+    };
+  }
 
-    return updated;
+  return updated;
 };
 
 /*
@@ -420,62 +438,62 @@ const updateVendorListing = async (req, res) => {
 */
 
 const edit = async (req, res) => {   // adminUpdateProduct
-    // const session = await mongoose.startSession();
-    // session.startTransaction();
+  // const session = await mongoose.startSession();
+  // session.startTransaction();
 
-    try {
-        const productId = req.params.id;
-        const { productData, variantsData, vendorListingsData } = req.body;
+  try {
+    const productId = req.params.id;
+    const { productData, variantsData, vendorListingsData } = req.body;
 
-        // 1️⃣ Update product info
-        const product = await ProductModel.findByIdAndUpdate(
-            productId,
-            productData,
-            // { new: true, runValidators: true, session }
-            { new: true, runValidators: true }
-        );
+    // 1️⃣ Update product info
+    const product = await ProductModel.findByIdAndUpdate(
+      productId,
+      productData,
+      // { new: true, runValidators: true, session }
+      { new: true, runValidators: true }
+    );
 
-        if (!product) {
-            throw {
-                statusFromService: 400,
-                msgFromService: "Product not found.",
-            };
-        }
-
-        // 2️⃣ Update variants (array of { variantId, ...data })
-        if (variantsData && variantsData.length) {
-            for (const v of variantsData) {
-                await ProductVariantModel.findByIdAndUpdate(
-                    v.variantId,
-                    v,
-                    // { new: true, runValidators: true, session }
-                    { new: true, runValidators: true }
-                );
-            }
-        }
-
-        // 3️⃣ Update vendor listings (array of { listingId, ...data })
-        if (vendorListingsData && vendorListingsData.length) {
-            for (const l of vendorListingsData) {
-                await MultiVendorModel.findByIdAndUpdate(
-                    l.listingId,
-                    l,
-                    // { new: true, runValidators: true, session }
-                    { new: true, runValidators: true }
-                );
-            }
-        }
-
-        // await session.commitTransaction();
-        // session.endSession();
-
-        return { message: "Product, variants & listings updated successfully" };
-
-    } catch (err) {
-        // await session.abortTransaction();
-        // session.endSession();
-        throw err;
+    if (!product) {
+      throw {
+        statusFromService: 400,
+        msgFromService: "Product not found.",
+      };
     }
+
+    // 2️⃣ Update variants (array of { variantId, ...data })
+    if (variantsData && variantsData.length) {
+      for (const v of variantsData) {
+        await ProductVariantModel.findByIdAndUpdate(
+          v.variantId,
+          v,
+          // { new: true, runValidators: true, session }
+          { new: true, runValidators: true }
+        );
+      }
+    }
+
+    // 3️⃣ Update vendor listings (array of { listingId, ...data })
+    if (vendorListingsData && vendorListingsData.length) {
+      for (const l of vendorListingsData) {
+        await MultiVendorModel.findByIdAndUpdate(
+          l.listingId,
+          l,
+          // { new: true, runValidators: true, session }
+          { new: true, runValidators: true }
+        );
+      }
+    }
+
+    // await session.commitTransaction();
+    // session.endSession();
+
+    return { message: "Product, variants & listings updated successfully" };
+
+  } catch (err) {
+    // await session.abortTransaction();
+    // session.endSession();
+    throw err;
+  }
 };
 
 
@@ -494,68 +512,135 @@ const getProducts = async (req) => {
   return getProductsSimple(req);
 };
 
+// const getProductsSimple = async (req) => {
+//   const page = Number(req.query.page) || 1;
+//   const size = Number(req.query.size) || 12;
+//   const skip = (page - 1) * size;
+
+//   const totalProducts = await ProductModel.countDocuments({ isActive: true });
+
+//   // 1. products
+//   const products = await ProductModel.find({ isActive: true })
+//     .select("productName brand categoryId images")
+//     .skip(skip)
+//     .limit(size)
+//     .lean();
+
+//   if (!products.length) {
+//     return { page, size, totalProducts, data: [] };
+//   }
+
+//   // 2. variants
+//   const productIds = products.map(p => p._id);
+
+//   const variants = await ProductVariantModel.find({
+//     productId: { $in: productIds }
+//   })
+//     .select("_id productId")
+//     .lean();
+
+//   const variantIds = variants.map(v => v._id);
+
+//   // 3. vendor listings (only active + in stock)
+//   const listings = await MultiVendorModel.find({
+//     variantId: { $in: variantIds },
+//     isActive: true,
+//     productStock: { $gt: 0 }
+//   })
+//     .select("variantId productPrice")
+//     .lean();
+
+//   // 4. map min price per product
+//   const minPriceByProduct = {};
+
+//   listings.forEach(l => {
+//     const variant = variants.find(v =>
+//       v._id.toString() === l.variantId.toString()
+//     );
+
+//     if (!variant) return;
+
+//     const pid = variant.productId.toString();
+
+//     if (
+//       !minPriceByProduct[pid] ||
+//       l.productPrice < minPriceByProduct[pid]
+//     ) {
+//       minPriceByProduct[pid] = l.productPrice;
+//     }
+//   });
+
+//   // 5. attach price to product
+//   const data = products.map(p => ({
+//     ...p,
+//     startingPrice: minPriceByProduct[p._id.toString()] ?? null
+//   }));
+
+//   return {
+//     page,
+//     size,
+//     totalProducts,
+//     totalPages: Math.ceil(totalProducts / size),
+//     data
+//   };
+// };
+
 const getProductsSimple = async (req) => {
   const page = Number(req.query.page) || 1;
-  const size = Number(req.query.size) || 10;
+  const size = Number(req.query.size) || 12;
   const skip = (page - 1) * size;
 
-  const totalProducts = await ProductModel.countDocuments({ isActive: true });
+  const totalProducts = await ProductModel.countDocuments({
+    isActive: true
+  });
 
-  // 1. products
+  // 1️⃣ Get paginated products
   const products = await ProductModel.find({ isActive: true })
-    .select("productName brand categoryId images")
+    .populate("categoryId") // populate category
     .skip(skip)
     .limit(size)
     .lean();
 
   if (!products.length) {
-    return { page, size, totalProducts, data: [] };
+    return {
+      page,
+      size,
+      totalProducts,
+      totalPages: Math.ceil(totalProducts / size),
+      data: []
+    };
   }
 
-  // 2. variants
   const productIds = products.map(p => p._id);
 
+  // 2️⃣ Get variants of those products
   const variants = await ProductVariantModel.find({
     productId: { $in: productIds }
-  })
-    .select("_id productId")
-    .lean();
+  }).lean();
 
   const variantIds = variants.map(v => v._id);
 
-  // 3. vendor listings (only active + in stock)
+  // 3️⃣ Get active vendor listings
   const listings = await MultiVendorModel.find({
     variantId: { $in: variantIds },
-    isActive: true,
-    productStock: { $gt: 0 }
   })
-    .select("variantId productPrice")
+    .populate("vendorId", "name email")
     .lean();
 
-  // 4. map min price per product
-  const minPriceByProduct = {};
+  // 4️⃣ Attach listings to variants
+  const variantsWithListings = variants.map(variant => ({
+    ...variant,
+    vendors: listings.filter(
+      l => l.variantId.toString() === variant._id.toString()
+    )
+  }));
 
-  listings.forEach(l => {
-    const variant = variants.find(v =>
-      v._id.toString() === l.variantId.toString()
-    );
-
-    if (!variant) return;
-
-    const pid = variant.productId.toString();
-
-    if (
-      !minPriceByProduct[pid] ||
-      l.productPrice < minPriceByProduct[pid]
-    ) {
-      minPriceByProduct[pid] = l.productPrice;
-    }
-  });
-
-  // 5. attach price to product
-  const data = products.map(p => ({
-    ...p,
-    startingPrice: minPriceByProduct[p._id.toString()] ?? null
+  // 5️⃣ Attach variants to products
+  const data = products.map(product => ({
+    ...product,
+    variants: variantsWithListings.filter(
+      v => v.productId.toString() === product._id.toString()
+    )
   }));
 
   return {
@@ -569,7 +654,7 @@ const getProductsSimple = async (req) => {
 
 const getProductsWithAggregation = async (req) => {
   const page = Number(req.query.page) || 1;
-  const size = Number(req.query.size) || 10;
+  const size = Number(req.query.size) || 12;
   const skip = (page - 1) * size;
 
   const {

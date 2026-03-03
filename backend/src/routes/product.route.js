@@ -2,7 +2,8 @@ import { addProduct, getAllProduct, updateProduct, getProductById, toggleActiveS
 import express from "express";
 import auth from "../middlewares/auth.middleware.js";
 import roleBasedAuth from "../middlewares/roleBasedAuth.middleware.js";
-import { CUSTOMER, MERCHANT, ADMIN } from "../constants/roles.constant.js";
+import { CUSTOMER, MERCHANT, ADMIN } from "../constants/roles.constant.js"
+;import {upload} from "../middlewares/multer.middleware.js";
 
 import zodValidator from "../middlewares/zod.validator.middleware.js";
 import productSchema from "../library/schema/product/addProduct.schema.js";
@@ -13,7 +14,8 @@ const router = express.Router();
 /** 
  * POST /api/products/add
 */
-router.post("/add", auth, roleBasedAuth(MERCHANT), zodValidator(productSchema), addProduct);
+router.post("/add", auth, roleBasedAuth(MERCHANT), upload.array("images"), zodValidator(productSchema), addProduct);
+
 
 /** 
  * GET /api/products

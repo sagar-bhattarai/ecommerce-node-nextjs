@@ -3,7 +3,7 @@ import config from "../configs/config.js";
 
 const addProduct = async (req, res) => {
     try {
-        const result = await productService.createProductWithVariantForVendor (req);
+        const result = await productService.createProductWithVariantForVendor(req);
 
         return res
             .status(200)

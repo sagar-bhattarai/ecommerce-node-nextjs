@@ -1,8 +1,10 @@
 
-const page = () => {
+const orderManagementPage = () => {
   return (
-    <div>page</div>
+    <>
+      orderManagementPage
+    </>
   )
 }
 
-export default page
+export default orderManagementPage

@@ -11,6 +11,8 @@ const authSlice = createSlice({
     reducers: {
         logout: (state) => {
             state.user = null;
+            localStorage.setItem("accessToken","");
+            localStorage.setItem("refreshToken","");
         }
     },
     extraReducers: (builder) => {

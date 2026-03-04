@@ -1,7 +1,7 @@
 import axios from "axios";
 import config from "@/config/config";
 
-export const addProduct = async ( data ) => {
+export const addProduct = async (data) => {
     const authToken = localStorage.getItem("accessToken");
 
     const response = await axios.post(
@@ -18,7 +18,7 @@ export const addProduct = async ( data ) => {
 };
 
 
-export const fetchAllProducts = async ( searchParams ) => {
+export const fetchAllProducts = async (searchParams) => {
     const sort = (await searchParams)?.sort ?? ""
     const min = (await searchParams)?.min ?? ""
     const max = (await searchParams)?.max ?? ""
@@ -29,6 +29,30 @@ export const fetchAllProducts = async ( searchParams ) => {
     const response = await axios.get(`${config.apiUrl}/products?sort=${sort}&min=${min}&max=${max}&category=${category}&brands=${brands}&name=${name}`);
     return response.data.result.data;
 };
+
+export const getProductById = async (id) => {
+
+    const response = await axios.get(`${config.apiUrl}/products/product/${id}`);
+    // return response.data.result.data;
+    return response.data;
+};
+
+export const updateProduct = async (id, data) => {
+    const authToken = localStorage.getItem("accessToken");
+
+    const response = await axios.patch(
+        `${config.apiUrl}/products/${id}/update`,
+        data,
+        {
+            headers: {
+                Authorization: `Bearer ${authToken}`
+            }
+        }
+    );
+
+    return response.data.result.data;
+};
+
 
 /*    suggestion from Ai
 

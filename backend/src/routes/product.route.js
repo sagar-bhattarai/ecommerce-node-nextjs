@@ -42,7 +42,7 @@ router.get("/toggleStatus/:internalSku", auth, roleBasedAuth(MERCHANT), toggleAc
  *       /api/products/:id/admin-update
 */
 // router.patch("/update/:id", auth, roleBasedAuth(MERCHANT), updateProduct);   
-router.patch("/:id/admin-update", auth, roleBasedAuth(MERCHANT, ADMIN), zodValidator(updateProductSchema), updateProduct);
+router.patch("/:id/update", auth, roleBasedAuth(MERCHANT, ADMIN), zodValidator(updateProductSchema), updateProduct);
 
 /** 
  * GET /api/products/delete/:id

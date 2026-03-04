@@ -1,4 +1,7 @@
 import Image from "next/image";
+import Link from "next/link"
+import product_placeholder from "../../../../public/product_placeholder.jpg";
+import { FaPencilAlt, FaTrash } from "react-icons/fa";
 
 const ProductTable = ({ products }) => {
     const rows = [];
@@ -14,7 +17,8 @@ const ProductTable = ({ products }) => {
                     // color: variant.attributes?.color,
                     productPrice: vendor.productPrice,
                     stock: vendor.productStock,
-                    id: vendor._id
+                    vendorId: vendor._id,
+                    id:product._id
                 });
             });
         });
@@ -56,17 +60,17 @@ const ProductTable = ({ products }) => {
                             Rating
                         </th>
                         <th scope="col" className="px-4 py-3">
-                            Revenue
+                            Updated At
                         </th>
                         <th scope="col" className="px-4 py-3">
-                            Updated At
+                            Actions
                         </th>
                     </tr>
                 </thead>
                 <tbody>
 
                     {rows.map((product) => (
-                        <tr key={product._id} className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <tr key={product.id} className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
                             <td className="w-4 px-4 py-3">
                                 <div className="flex items-center">
                                     <input
@@ -85,9 +89,9 @@ const ProductTable = ({ products }) => {
                                 className="flex items-center px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                             >
                                 <Image
-                                    src=""
-                                    alt="iMac Front Image"
-                                    className="w-8 h-8 mr-3"
+                                    src={!product.image ? product_placeholder : product.image}
+                                    alt={product.productName}
+                                    className="w-8 h-8 mr-3 object-cover"
                                     height={100}
                                     width={100}
                                 />
@@ -100,7 +104,10 @@ const ProductTable = ({ products }) => {
                             </td>
                             <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                 <div className="flex items-center">
-                                    <div className="inline-block w-4 h-4 mr-2 bg-red-700 rounded-full"></div>
+                                    <div className={`inline-block w-4 h-4 mr-2 rounded-full
+                                        ${(product.stock <= 5) && "bg-red-700"} 
+                                        ${(product.stock < 10 && product.stock > 5) && "bg-yellow-600"} 
+                                        ${(product.stock >= 10) && "bg-green-700"} `}></div>
                                     {product.stock}
                                 </div>
                             </td>
@@ -162,10 +169,16 @@ const ProductTable = ({ products }) => {
                                     </span>
                                 </div>
                             </td>
-
-                            <td className="px-4 py-2">$3.2M</td>
                             <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                 {new Date(product.updatedAt).toLocaleDateString("en-CA")}
+                            </td>
+                            <td className="flex justify-center items-center px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                <Link className="mr-2 hover:text-yellow-700 cursor-pointer" href={`/product-management/edit/${product.id}`}>
+                                    <FaPencilAlt />
+                                </Link> 
+                                <Link className="hover:text-red-600 cursor-pointer" href={"/product-management/add"}>
+                                    <FaTrash />
+                                </Link>
                             </td>
                         </tr>
                     ))}

@@ -4,7 +4,6 @@ import Pagination from "@/components/admin/products/Pagination"
 import { fetchAllProducts } from "@/apis/product.api"
 const productManagementPage = async () => {
   const products = await fetchAllProducts();
-  // console.log(products)
   return (
     <>
       <section className="">
@@ -22,8 +21,8 @@ const productManagementPage = async () => {
                 </h5>
               </div>
               <div className="flex flex-col flex-shrink-0 space-y-3 md:flex-row md:items-center lg:justify-end md:space-y-0 md:space-x-3">
-                <div className="border border-transparent hover:border-primary p-1.5 rounded-lg">
-                  <Link className="flex gap-2" href={"/product-management/add"}>
+                <div className="border border-gray-100/8 hover:border-primary p-1.5 rounded-lg">
+                  <Link className=" flex items-center  gap-2" href={"/product-management/add"}>
                     <svg className="h-3.5 w-3.5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <path clipRule="evenodd" fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                     </svg>

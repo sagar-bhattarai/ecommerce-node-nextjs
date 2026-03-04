@@ -285,61 +285,138 @@ const createProductWithVariantForVendor = async (req) => {
 //     return data;
 // };
 
+
+
 const single = async (id) => {
-  // 1. product
+
+  // 1️⃣ Product + category
   const product = await ProductModel.findOne({
     _id: id,
     isActive: true
-  }).lean();
+  })
+    .populate("categoryId") // include category details
+    .lean();
 
   if (!product) {
-    return res.status(404).json({ message: "Product not found" });
+    throw new Error("Product not found");
   }
 
-  // 2. variants
+  // 2️⃣ Variants
   const variants = await ProductVariantModel.find({
     productId: product._id
   }).lean();
 
-  // 3. vendor listings
   const variantIds = variants.map(v => v._id);
 
+  // 3️⃣ Vendor listings
   const listings = await MultiVendorModel.find({
-    variantId: { $in: variantIds },
-    isActive: true
-  }).lean();
+    variantId: { $in: variantIds }
+  })
+    .populate("vendorId", "name email") // optional
+    .lean();
 
-  // 4. group listings by variant
+  // 4️⃣ Group listings by variant
   const listingMap = {};
+
   listings.forEach(l => {
     const key = l.variantId.toString();
+
     if (!listingMap[key]) listingMap[key] = [];
+
     listingMap[key].push({
-      vendorId: l.vendorId,
-      price: l.price,
-      stock: l.stock
+      _id: l._id,
+      vendor: l.vendorId,
+      productPrice: l.productPrice,
+      oldPrice: l.oldPrice,
+      productStock: l.productStock,
+      publicSku: l.publicSku,
+      createdAt: l.createdAt,
+      updatedAt: l.updatedAt
     });
   });
 
-  // 5. attach listings + cheapest price
+  // 5️⃣ Attach everything
   const finalVariants = variants.map(v => {
     const vendorList = listingMap[v._id.toString()] || [];
-    const prices = vendorList.map(l => l.price);
+    const prices = vendorList.map(l => l.productPrice);
+    const totalStock = vendorList.reduce(
+      (acc, curr) => acc + curr.productStock,
+      0
+    );
 
+    const productPrice = listings[0]?.productPrice || null;
+    
     return {
-      _id: v._id,
-      sku: v.internalSku,
-      attributes: v.attributes,
+      ...v,
       vendors: vendorList,
-      cheapestPrice: prices.length ? Math.min(...prices) : null
+      productPrice: productPrice,
+      cheapestPrice: prices.length ? Math.min(...prices) : null,
+      totalStock
     };
   });
 
   return {
-    product,
+    ...product,
     variants: finalVariants
   };
 };
+// const single = async (id) => {
+//   // 1. product
+//   const product = await ProductModel.findOne({
+//     _id: id,
+//     isActive: true
+//   }).lean();
+
+//   if (!product) {
+//     throw new {
+//        message: "Product not found"
+//     }
+//   }
+
+//   // 2. variants
+//   const variants = await ProductVariantModel.find({
+//     productId: product._id
+//   }).lean();
+
+//   // 3. vendor listings
+//   const variantIds = variants.map(v => v._id);
+
+//   const listings = await MultiVendorModel.find({
+//     variantId: { $in: variantIds },
+//     isActive: true
+//   }).lean();
+
+//   // 4. group listings by variant
+//   const listingMap = {};
+//   listings.forEach(l => {
+//     const key = l.variantId.toString();
+//     if (!listingMap[key]) listingMap[key] = [];
+//     listingMap[key].push({
+//       vendorId: l.vendorId,
+//       price: l.price,
+//       stock: l.stock
+//     });
+//   });
+
+//   // 5. attach listings + cheapest price
+//   const finalVariants = variants.map(v => {
+//     const vendorList = listingMap[v._id.toString()] || [];
+//     const prices = vendorList.map(l => l.price);
+
+//     return {
+//       _id: v._id,
+//       sku: v.internalSku,
+//       attributes: v.attributes,
+//       vendors: vendorList,
+//       cheapestPrice: prices.length ? Math.min(...prices) : null
+//     };
+//   });
+
+//   return {
+//     product,
+//     variants: finalVariants
+//   };
+// };
 
 const toggle = async (productId) => {
   const updated = await ProductModel.findIdAndUpdate(

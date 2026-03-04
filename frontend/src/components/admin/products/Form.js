@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
@@ -10,14 +10,41 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
 
-const ProductForm = () => {
+const ProductForm = ({ product }) => {
   const state = useSelector((state) => state);
   const user = state.auth.user?.data.data || state.auth.user?.data.loggedInUser
 
   const [selectedImages, setSelectedImages] = useState([])
-  const [loading, setLoading] = useState(false)
-  const { register, handleSubmit } = useForm();
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  // let variant = product?.variants?.[0];
+  // const { register, handleSubmit } = useForm({
+  //   values: {
+  //     name: product.productName,
+  //     brand: product.brand,
+  //     category: product.categoryId?.categoryName,
+  //     price: variant?.productPrice,
+  //     stock: variant?.totalStock,
+  //     description: product?.productDescription || "",
+  //   }
+  // });
+
+  const { register, handleSubmit, reset } = useForm();
+  useEffect(() => {
+    if (product?.productName) {
+      const firstVariant = product?.variants?.[0];
+
+      reset({
+        name: product.productName || "",
+        brand: product.brand || "",
+        category: product.categoryId?.categoryName || "",
+        price: firstVariant?.productPrice || "",
+        stock: firstVariant?.totalStock || "",
+        description: product?.productDescription || "",
+      });
+    }
+  }, [product, reset]);
 
   const onDrop = useCallback((acceptedFiles) => {
     const images = acceptedFiles.map((file) => (

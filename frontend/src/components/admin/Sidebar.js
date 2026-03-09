@@ -44,7 +44,7 @@ const Sidebar = () => {
                             </li>
                         ))}
                         <li className="hover:text-primary">
-                            <button onClick={dispatch_logout} className="flex items-center w-full bg-red-600 hover:bg-red-800 hover:text-gray-300 text-white px-2 py-1.5 text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group">
+                            <button onClick={dispatch_logout} className="flex items-center w-full bg-red-900 hover:bg-red-700 hover:text-gray-300 text-white px-2 py-1.5 text-body rounded-base hover:bg-neutral-tertiary hover:text-fg-brand group">
                                 <FaSignOutAlt />
                                 <span className="ms-3">Logout</span>
                             </button>

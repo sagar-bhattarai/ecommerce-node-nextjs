@@ -4,47 +4,31 @@ import { useForm } from "react-hook-form";
 import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { FaTimes, FaSpinner } from "react-icons/fa";
-import { addProduct, updateProduct } from "@/apis/product.api";
+import { addUser, updateUser } from "@/apis/user.api";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
-const ProductForm = ({ product }) => {
-  console.log("product",product)
+const UserForm = ({ user }) => {
+  console.log("user",user)
   const state = useSelector((state) => state);
-  const user = state.auth.user?.data.data || state.auth.user?.data.loggedInUser;
+  // const user = state.auth.user?.data.data || state.auth.user?.data.loggedInUser;
 
   const [selectedImages, setSelectedImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // let variant = product?.variants?.[0];
-  // const { register, handleSubmit } = useForm({
-  //   values: {
-  //     name: product.productName,
-  //     brand: product.brand,
-  //     category: product.categoryId?.categoryName,
-  //     price: variant?.productPrice,
-  //     stock: variant?.totalStock,
-  //     description: product?.productDescription || "",
-  //   }
-  // });
-
   const { register, handleSubmit, reset } = useForm();
   useEffect(() => {
-    if (product?.productName) {
-      const firstVariant = product?.variants?.[0];
-
+    if (user) {
       reset({
-        name: product.productName || "",
-        brand: product.brand || "",
-        category: product.categoryId?.categoryName || "",
-        price: firstVariant?.productPrice || "",
-        stock: firstVariant?.totalStock || "",
-        description: product?.productDescription || "",
+        name: user.userName || "",
+        email: user.userEmail || "",
+        address: user.userAddress || "",
+        roles: user.roles || ""
       });
     }
-  }, [product, reset]);
+  }, [user, reset]);
 
   const onDrop = useCallback((acceptedFiles) => {
     const images = acceptedFiles.map((file) => ({
@@ -67,77 +51,51 @@ const ProductForm = ({ product }) => {
     setLoading(true);
     const formData = new FormData();
 
-    if (product) {
-      // {
-      //   "productData": { "productName": "Nike T-Shirt", "productDescription": "Updated description","brand": "Nike" },
-      //   "variantsData": { "variantId": "697f719c1b5fe398d757ffa8", "attributes": { "size": "M", "color": "Red" } },
-      //   "vendorListingsData": { "listingId": "697efeb73e15f92bb3cf4b1a", "productPrice": 1200, "productStock": 10 }
-      // }
-      const productData = {
-        id: product._id,
-        productName: data.name,
-        brand: data.brand,
-        productDescription: data.description,
+    if (user) {
+      const userData = {
+        id: user._id,
+        userName: user.userName,
+        userEmail: user.userEmail,
+        userAddress: user.userAddress,
+        userRoles: user.userRoles,
       };
-
-      const variantsData = {
-        variantId: product.variants[0]._id,
-        attributes: data.attributes,
-      };
-
-      const vendorListingsData = {
-        listingId: data.listingId,
-        productPrice: parseInt(data.price) || 0,
-        productStock: parseInt(data.stock) || 1,
-      };
-
-      // append JSON
-      formData.append("productData", JSON.stringify(productData));
-      formData.append("variantsData", JSON.stringify(variantsData));
-      formData.append("vendorListingsData", JSON.stringify(vendorListingsData));
-
       // images
       if (selectedImages.length > 0) {
         selectedImages.forEach((image) => {
-          formData.append("productImage", image);
+          formData.append("userImage", image);
         });
       }
     } else {
-      formData.append("productName", data.name);
-      formData.append("brand", data.brand);
-      formData.append("categoryId", data.category);
-      formData.append("supplierId", user?._id);
-      formData.append("productPrice", parseInt(data.price) || 0);
-      formData.append("productStock", parseInt(data.stock) || 1);
-
-      if (data.description) {
-        formData.append("productDescription", data.description);
-      }
+      formData.append("userName", data.userName);
+      formData.append("userEmail", data.userEmail);
+      formData.append("userEmail", data.userEmail);
+      formData.append("userAddress", user?.userAddress);
+      formData.append("userRoles", user?.userRoles);
 
       if (selectedImages.length > 0) {
         selectedImages.forEach((image) => {
-          formData.append("productImage", image);
+          formData.append("userImage", image);
         });
       }
     }
 
 
 
-    if (product) {
-      updateProduct(product._id, formData)
+    if (user) {
+      updateUser(user._id, formData)
         .then((res) => {
-          toast.success("Produt updated successfully");
+          toast.success("user updated successfully");
           router.back();
         })
         .catch((error) => {
           // toast.error(error.message);
-          toast.error("could not update product");
+          toast.error("could not update user");
         })
         .finally(() => setLoading(false));
     } else {
-      addProduct(formData)
+      addUser(formData)
         .then((res) => {
-          toast.success("Produt created successfully");
+          toast.success("user created successfully");
           router.back();
         })
         .catch((error) => {
@@ -160,68 +118,68 @@ const ProductForm = ({ product }) => {
             htmlFor="name"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Product Name *
+            User Name *
           </label>
           <input
             type="text"
             id="name"
             className="bg-[#07070729] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring focus:outline-none  dark:focus:ring-primary dark:focus:border-primary"
-            placeholder="Type product name"
+            placeholder="Type user name"
             required
             {...register("name")}
           />
         </div>
         <div className="w-full">
           <label
-            htmlFor="brand"
+            htmlFor="email"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
             Brand *
           </label>
           <input
             type="text"
-            name="brand"
-            id="brand"
+            name="email"
+            id="email"
             className="bg-[#07070729] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring focus:outline-none  dark:focus:ring-primary dark:focus:border-primary"
-            placeholder="Product brand"
+            placeholder="User email"
             required
-            {...register("brand")}
+            {...register("email")}
           />
         </div>
         <div className="w-full">
           <label
-            htmlFor="price"
+            htmlFor="address"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
             Price *
           </label>
           <input
-            type="number"
-            id="price"
+            type="text"
+            id="address"
             className="bg-[#07070729] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring focus:outline-none  dark:focus:ring-primary dark:focus:border-primary"
             placeholder="Rs.2999"
             min="0"
             required
-            {...register("price")}
+            {...register("address")}
           />
         </div>
         <div>
           <label
-            htmlFor="category"
+            htmlFor="roles"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
             Category *
           </label>
           <input
             type="text"
-            id="category"
+            id="roles"
             className="bg-[#07070729] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white  focus:ring focus:outline-none  dark:focus:ring-primary dark:focus:border-primary"
-            placeholder="product category"
+            placeholder="user roles"
             required
-            {...register("category")}
+            {...register("roles")}
           />
         </div>
-        <div>
+        {/* <div>
           <label
             htmlFor="stock"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -236,7 +194,7 @@ const ProductForm = ({ product }) => {
             placeholder="9"
             {...register("stock")}
           />
-        </div>
+        </div> */}
         <div className="sm:col-span-2">
           <div
             {...getRootProps()}
@@ -296,7 +254,7 @@ const ProductForm = ({ product }) => {
             </div>
           )}
         </div>
-        <div className="sm:col-span-2">
+        {/* <div className="sm:col-span-2">
           <label
             htmlFor="description"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -310,7 +268,7 @@ const ProductForm = ({ product }) => {
             placeholder="Your description here"
             {...register("description")}
           ></textarea>
-        </div>
+        </div> */}
       </div>
       <button
         type="submit"
@@ -320,15 +278,15 @@ const ProductForm = ({ product }) => {
         {loading ? (
           <>
             {" "}
-            {product ? "Updating Product" : "Adding Product"}{" "}
+            {user ? "Updating User" : "Adding User"}{" "}
             <FaSpinner className="animate-spin" />{" "}
           </>
         ) : (
-          <> {product ? "Update Product" : "Add Product"}</>
+          <> {user ? "Update User" : "Add User"}</>
         )}
       </button>
     </form>
   );
 };
 
-export default ProductForm;
+export default UserForm;

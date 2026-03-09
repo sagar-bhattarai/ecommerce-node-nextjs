@@ -345,7 +345,7 @@ const single = async (id) => {
     );
 
     const productPrice = listings[0]?.productPrice || null;
-    
+
     return {
       ...v,
       vendors: vendorList,
@@ -521,14 +521,22 @@ const edit = async (req, res) => {   // adminUpdateProduct
   try {
     const productId = req.params.id;
     const { productData, variantsData, vendorListingsData } = req.body;
+    const parsedProductData = JSON.parse(productData);
+    const parsedVariantsData = JSON.parse(variantsData);
+    const parsedVendorListingsData = JSON.parse(vendorListingsData);
+    // const productId = parsedProductData.id;
 
     // 1️⃣ Update product info
     const product = await ProductModel.findByIdAndUpdate(
       productId,
-      productData,
+      // productData,
+      parsedProductData,
       // { new: true, runValidators: true, session }
       { new: true, runValidators: true }
     );
+
+    // console.log("product >>>>>>>>", product);
+
 
     if (!product) {
       throw {
@@ -538,8 +546,8 @@ const edit = async (req, res) => {   // adminUpdateProduct
     }
 
     // 2️⃣ Update variants (array of { variantId, ...data })
-    if (variantsData && variantsData.length) {
-      for (const v of variantsData) {
+    if (parsedVariantsData && parsedVariantsData.length) {
+      for (const v of parsedVariantsData) {
         await ProductVariantModel.findByIdAndUpdate(
           v.variantId,
           v,
@@ -548,17 +556,28 @@ const edit = async (req, res) => {   // adminUpdateProduct
         );
       }
     }
+    console.log("parsedVendorListingsData", parsedVendorListingsData)
 
-    // 3️⃣ Update vendor listings (array of { listingId, ...data })
-    if (vendorListingsData && vendorListingsData.length) {
-      for (const l of vendorListingsData) {
-        await MultiVendorModel.findByIdAndUpdate(
-          l.listingId,
-          l,
-          // { new: true, runValidators: true, session }
-          { new: true, runValidators: true }
-        );
-      }
+    // // 3️⃣ Update vendor listings (array of { listingId, ...data })
+    // if (parsedVendorListingsData && parsedVendorListingsData.length) {
+    //   for (const l of parsedVendorListingsData) {
+    //     await MultiVendorModel.findByIdAndUpdate(
+    //       l.listingId,
+    //       l,
+    //       // { new: true, runValidators: true, session }
+    //       { new: true, runValidators: true }
+    //     );
+    //   }
+    // }
+
+    if (parsedVendorListingsData) {
+      const { listingId, ...updateData } = parsedVendorListingsData;
+
+      await MultiVendorModel.findByIdAndUpdate(
+        listingId,
+        updateData,
+        { new: true, runValidators: true }
+      );
     }
 
     // await session.commitTransaction();
@@ -667,13 +686,12 @@ const getProductsSimple = async (req) => {
   const size = Number(req.query.size) || 12;
   const skip = (page - 1) * size;
 
-  const totalProducts = await ProductModel.countDocuments({
-    isActive: true
-  });
+  // 1️⃣ total products
+  const totalProducts = await ProductModel.countDocuments({ isActive: true });
 
-  // 1️⃣ Get paginated products
+  // 2️⃣ products
   const products = await ProductModel.find({ isActive: true })
-    .populate("categoryId") // populate category
+    .populate("categoryId")
     .skip(skip)
     .limit(size)
     .lean();
@@ -690,34 +708,68 @@ const getProductsSimple = async (req) => {
 
   const productIds = products.map(p => p._id);
 
-  // 2️⃣ Get variants of those products
+  // 3️⃣ variants
   const variants = await ProductVariantModel.find({
     productId: { $in: productIds }
   }).lean();
 
   const variantIds = variants.map(v => v._id);
 
-  // 3️⃣ Get active vendor listings
-  const listings = await MultiVendorModel.find({
-    variantId: { $in: variantIds },
+  // 4️⃣ vendor listings
+  const vendorListings = await MultiVendorModel.find({
+    variantId: { $in: variantIds }
   })
-    .populate("vendorId", "name email")
+    .populate("vendorId", "_id name email")
     .lean();
 
-  // 4️⃣ Attach listings to variants
-  const variantsWithListings = variants.map(variant => ({
-    ...variant,
-    vendors: listings.filter(
-      l => l.variantId.toString() === variant._id.toString()
-    )
-  }));
+  // 5️⃣ group vendors by variant
+  const vendorMap = {};
 
-  // 5️⃣ Attach variants to products
+  vendorListings.forEach(v => {
+    const key = String(v.variantId);
+
+    if (!vendorMap[key]) vendorMap[key] = [];
+
+    vendorMap[key].push({
+      listingId: v._id,
+      variantId: v.variantId,
+      vendor: v.vendorId,
+      productPrice: v.productPrice,
+      productStock: v.productStock,
+      publicSku: v.publicSku,
+      createdAt: v.createdAt,
+      updatedAt: v.updatedAt
+    });
+  });
+
+  // 6️⃣ attach vendors to variants
+  const variantMap = {};
+
+  variants.forEach(variant => {
+    const key = String(variant.productId);
+
+    const vendors = vendorMap[String(variant._id)] || [];
+
+    const prices = vendors.map(v => v.productPrice);
+    const totalStock = vendors.reduce((sum, v) => sum + v.productStock, 0);
+
+    const variantData = {
+      ...variant,
+      vendors,
+      productPrice: prices.length ? Math.min(...prices) : 0,
+      cheapestPrice: prices.length ? Math.min(...prices) : 0,
+      totalStock
+    };
+
+    if (!variantMap[key]) variantMap[key] = [];
+
+    variantMap[key].push(variantData);
+  });
+
+  // 7️⃣ attach variants to products
   const data = products.map(product => ({
     ...product,
-    variants: variantsWithListings.filter(
-      v => v.productId.toString() === product._id.toString()
-    )
+    variants: variantMap[String(product._id)] || []
   }));
 
   return {
@@ -728,7 +780,6 @@ const getProductsSimple = async (req) => {
     data
   };
 };
-
 const getProductsWithAggregation = async (req) => {
   const page = Number(req.query.page) || 1;
   const size = Number(req.query.size) || 12;

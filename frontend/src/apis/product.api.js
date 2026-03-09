@@ -41,7 +41,7 @@ export const updateProduct = async (id, data) => {
     const authToken = localStorage.getItem("accessToken");
 
     const response = await axios.patch(
-        `${config.apiUrl}/products/${id}/update`,
+        `${config.apiUrl}/products/update/${id}`,
         data,
         {
             headers: {

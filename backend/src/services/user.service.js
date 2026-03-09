@@ -5,6 +5,14 @@ import crypto from "crypto";
 import bcrypt from "bcrypt";
 import sendMail from "../utility/mail.js";
 
+const all = async () => {
+    return await UserModel.find();
+}
+
+const single = async (id) => {
+    return await UserModel.findById(id);
+}
+
 const edit = async (req) => {
     const user = await UserModel.findById(req.user._id);
 
@@ -131,4 +139,4 @@ const editRole = async (req) => {
     ).select("-userPassword -refreshToken -createdAt -updatedAt -__v");
 }
 
-export default { edit, deactivate, reset, verifyOtp, sendOtpOnMail, editRole }
+export default { all, single, edit, deactivate, reset, verifyOtp, sendOtpOnMail, editRole }

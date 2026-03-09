@@ -6,6 +6,34 @@ const options = {
   secure: true,
 };
 
+const getAllUsers = async (req, res) => {
+    try {
+        const result = await userService.all(req);
+
+        return res
+            .status(200)
+            .json({ api: config.api, result, message: "users fetched successfully." });
+
+    } catch (error) {
+        return res
+            .status(error.statusFromService || 500)
+            .json({ error: true, message: error.msgFromService || "server error while fetching users." });
+    }
+}
+const getUserById = async (req, res) => {
+    try {
+        const result = await userService.single(req.params.id);
+
+        return res
+            .status(200)
+            .json({ api: config.api, result, message: "user fetched successfully." });
+
+    } catch (error) {
+        return res
+            .status(500)
+            .json({ error: true, message: "server error while fetching user." });
+    }
+}
 const updateUser = async (req, res) => {
   try {
     const result = await userService.edit(req);
@@ -98,4 +126,4 @@ const updateUserRole = async (req, res) => {
   }
 };
 
-export { updateUser, deactivateUser, sendOtp, resetPassword, verifyEmail, updateUserRole };
+export { updateUser, deactivateUser, sendOtp, resetPassword, verifyEmail, updateUserRole, getAllUsers, getUserById };

@@ -1,22 +1,36 @@
 import axios from "axios";
 import config from "@/config/config";
 
-export const addUser = async (data) => {
+/*    suggestion from Ai */
+
+export const fetchAllUsers = async (searchParams) => {
+    const sort = searchParams?.sort ?? "";
+    const min = searchParams?.min ?? "";
+    const max = searchParams?.max ?? "";
+
     const authToken = localStorage.getItem("accessToken");
 
-    const response = await axios.post(
-        `${config.apiUrl}/users/add`,
-        data,
-        {
-            headers: {
-                Authorization: `Bearer ${authToken}`
-            }
-        }
-    );
+    const queryParams = new URLSearchParams({ sort, min, max }).toString();
+
+    const response = await axios.get(`${config.apiUrl}/users?${queryParams}`, {
+        headers: {
+            Authorization: `Bearer ${authToken}`,
+        },
+    });
+
+    return response.data.result;
+};
+
+export const addUser = async (data) => {
+    const authToken = localStorage.getItem("accessToken");
+    const response = await axios.post(`${config.apiUrl}/users/add`, data, {
+        headers: {
+            Authorization: `Bearer ${authToken}`,
+        },
+    });
 
     return response.data.result.data;
 };
-
 
 // export const fetchAllUsers = async (searchParams) => {
 //     const sort = (await searchParams)?.sort ?? ""
@@ -31,7 +45,6 @@ export const addUser = async (data) => {
 // };
 
 export const getUserById = async (id) => {
-
     const response = await axios.get(`${config.apiUrl}/users/user/${id}`);
     return response.data;
 };
@@ -44,28 +57,10 @@ export const updateUser = async (id, data) => {
         data,
         {
             headers: {
-                Authorization: `Bearer ${authToken}`
-            }
-        }
+                Authorization: `Bearer ${authToken}`,
+            },
+        },
     );
 
     return response.data.result.data;
 };
-
-
-/*    suggestion from Ai */ 
-
-export const fetchAllUsers = async (searchParams) => {
-  const sort = searchParams?.sort ?? "";
-  const min = searchParams?.min ?? "";
-  const max = searchParams?.max ?? "";
-  const name = searchParams?.name ?? "";
-
-  const queryParams = new URLSearchParams({
-    sort, min, max, name
-  }).toString();
-
-  const response = await axios.get(`${config.apiUrl}/users?${queryParams}`);
-  return response.data.result;
-};
-

@@ -1,9 +1,22 @@
-import Link from "next/link"
-import Table from "@/components/admin/users/Table"
-import Pagination from "@/components/admin/users/Pagination"
-import { fetchAllUsers } from "@/apis/user.api"
-const userManagementPage = async () => {
-  const users = await fetchAllUsers();
+"use client"
+import Link from "next/link";
+import Table from "@/components/admin/users/Table";
+import Pagination from "@/components/admin/users/Pagination";
+import { fetchAllUsers } from "@/apis/user.api";
+import { useState, useEffect } from "react";
+
+const userManagementPage = () => {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const loadUsers = async () => {
+      const data = await fetchAllUsers({});
+      setUsers(data);
+    };
+
+    loadUsers();
+  }, []);
+
   return (
     <>
       <section className="">
@@ -12,12 +25,16 @@ const userManagementPage = async () => {
             <div className="flex flex-col px-4 py-3 space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0 lg:space-x-4">
               <div className="flex items-center flex-1 space-x-4">
                 <h5>
-                  <span className="text-gray-500">All Users:</span>
+                  <span className="text-gray-500">All Users: </span>
                   <span className="dark:text-white">123456</span>
                 </h5>
                 <h5>
-                  <span className="text-gray-500">Total sales:</span>
-                  <span className="dark:text-white">$88.4k</span>
+                  <span className="text-gray-500">Total Active: </span>
+                  <span className="dark:text-white">88,789</span>
+                </h5>
+                <h5>
+                  <span className="text-gray-500">Total Verified: </span>
+                  <span className="dark:text-white">64,982</span>
                 </h5>
               </div>
               <div className="flex flex-col flex-shrink-0 space-y-3 md:flex-row md:items-center lg:justify-end md:space-y-0 md:space-x-3">
@@ -38,9 +55,9 @@ const userManagementPage = async () => {
               </div>
             </div>
             <div className="overflow-x-auto">
-                <Table users={users}/>
+              <Table users={users} />
             </div>
-                <Pagination/>
+            <Pagination />
           </div>
         </div>
       </section>

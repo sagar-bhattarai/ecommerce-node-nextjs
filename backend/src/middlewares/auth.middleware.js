@@ -32,6 +32,8 @@ const auth = async (req, res, next) => {
         req.roles = user.userRoles;
         next();
     } catch (error) {
+        console.log("error",error)
+
         return res
             .status(error.status || 500)
             .json({ error: true, message: error.message || "internal server error in auth middleware" })

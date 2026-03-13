@@ -1,6 +1,6 @@
 import express from "express";
 import { registerUser, loginUser, logoutUser } from "../controllers/auth.controller.js"
-import { updateUser, deactivateUser, sendOtp, resetPassword, verifyEmail, updateUserRole } from "../controllers/user.controller.js"
+import { updateUser, deactivateUser, sendOtp, resetPassword, verifyEmail, updateUserRole, getAllUsers, getUserById } from "../controllers/user.controller.js"
 
 import auth from "../middlewares/auth.middleware.js";
 import {upload} from "../middlewares/multer.middleware.js";
@@ -30,9 +30,9 @@ router.get("/logout", auth, logoutUser);
 
 
 /** 
- * PUT /api/users/update
+ * GET /api/users
 */
-router.put("/update", upload.single('profileImage'), auth, updateUser);
+router.get("/", auth, roleBasedAuth(ADMIN), getAllUsers);
 /** 
  * GET /api/users/deactive
 */
@@ -49,6 +49,14 @@ router.get("/send-otp", auth, sendOtp);
  * GET /api/users/verify-email
 */
 router.get("/verify-email", auth, verifyEmail);
+/** 
+ * GET /api/users/user/:id
+*/
+router.get("/user/:id", auth, roleBasedAuth(ADMIN), getUserById);
+/** 
+ * PUT /api/users/update/:id
+*/
+router.patch("/update/:id", upload.single('profileImage'), auth, roleBasedAuth(ADMIN), updateUser);
 /** 
  * PUT /api/users/update-user-role/:id
 */

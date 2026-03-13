@@ -8,9 +8,19 @@ import { addUser, updateUser } from "@/apis/user.api";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { getUserById } from "@/apis/user.api";
 
-const UserForm = ({ user }) => {
-  console.log("user",user)
+const UserForm = (id) => {
+  const [user, setUser] = useState();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const data = await getUserById(id);
+      setUser(data.result)
+    }
+    fetchUser();
+  }, []);
+
   const state = useSelector((state) => state);
   // const user = state.auth.user?.data.data || state.auth.user?.data.loggedInUser;
 
@@ -22,10 +32,22 @@ const UserForm = ({ user }) => {
   useEffect(() => {
     if (user) {
       reset({
-        name: user.userName || "",
-        email: user.userEmail || "",
-        address: user.userAddress || "",
-        roles: user.roles || ""
+        // name: user.userName || "",
+        // email: user.userEmail || "",
+        // address: user.userAddress || "",
+        // roles: user.userRoles.map(role => role) || "",
+        // active: user.isActive || "",
+        // verified: user.isEmailVerified || "",
+        // code: user.userCode || "",
+        // password: user.userPassword || "",
+        name: user.userName ?? "",
+        email: user.userEmail ?? "",
+        address: user.userAddress ?? "",
+        roles: user.userRoles ?? [],
+        active: user.isActive ?? "",
+        verified: user.isEmailVerified ?? "",
+        code: user.userCode ?? "",
+        password: user.userPassword ?? "",
       });
     }
   }, [user, reset]);
@@ -51,35 +73,17 @@ const UserForm = ({ user }) => {
     setLoading(true);
     const formData = new FormData();
 
-    if (user) {
-      const userData = {
-        id: user._id,
-        userName: user.userName,
-        userEmail: user.userEmail,
-        userAddress: user.userAddress,
-        userRoles: user.userRoles,
-      };
-      // images
-      if (selectedImages.length > 0) {
-        selectedImages.forEach((image) => {
-          formData.append("userImage", image);
-        });
-      }
-    } else {
-      formData.append("userName", data.userName);
-      formData.append("userEmail", data.userEmail);
-      formData.append("userEmail", data.userEmail);
-      formData.append("userAddress", user?.userAddress);
-      formData.append("userRoles", user?.userRoles);
+    formData.append("userName", data.name);
+    formData.append("userAddress", data?.address);
+    formData.append("userRoles", data?.roles);
+    formData.append("isActive", data?.active);
+    formData.append("isEmailVerified", data?.verified);
 
-      if (selectedImages.length > 0) {
-        selectedImages.forEach((image) => {
-          formData.append("userImage", image);
-        });
-      }
+    if (selectedImages.length > 0) {
+      selectedImages.forEach((image) => {
+        formData.append("profileImage", image);
+      });
     }
-
-
 
     if (user) {
       updateUser(user._id, formData)
@@ -113,7 +117,7 @@ const UserForm = ({ user }) => {
   return (
     <form onSubmit={handleSubmit(submitForm)}>
       <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
-        <div className="sm:col-span-2">
+        <div className="w-full">
           <label
             htmlFor="name"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -134,13 +138,14 @@ const UserForm = ({ user }) => {
             htmlFor="email"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Brand *
+            Email *
           </label>
           <input
+            disabled={user && true}
             type="text"
             name="email"
             id="email"
-            className="bg-[#07070729] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring focus:outline-none  dark:focus:ring-primary dark:focus:border-primary"
+            className={`${user && 'disabled:text-gray-100/20'} bg-[#07070729] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring focus:outline-none  dark:focus:ring-primary dark:focus:border-primary`}
             placeholder="User email"
             required
             {...register("email")}
@@ -151,7 +156,7 @@ const UserForm = ({ user }) => {
             htmlFor="address"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Price *
+            Address *
           </label>
           <input
             type="text"
@@ -168,7 +173,7 @@ const UserForm = ({ user }) => {
             htmlFor="roles"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Category *
+            Roles *
           </label>
           <input
             type="text"
@@ -179,22 +184,68 @@ const UserForm = ({ user }) => {
             {...register("roles")}
           />
         </div>
-        {/* <div>
+        <div>
           <label
-            htmlFor="stock"
+            htmlFor="active"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Stock
+            Active
           </label>
           <input
-            type="number"
-            id="stock"
-            min="0"
+            type="text"
+            id="active"
             className="bg-[#07070729] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring focus:outline-none  dark:focus:ring-primary dark:focus:border-primary"
-            placeholder="9"
-            {...register("stock")}
+            placeholder="false"
+            {...register("active")}
           />
-        </div> */}
+        </div>
+        <div>
+          <label
+            htmlFor="verified"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Email verification
+          </label>
+          <input
+            type="text"
+            id="verified"
+            className="bg-[#07070729] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring focus:outline-none  dark:focus:ring-primary dark:focus:border-primary"
+            placeholder="false"
+            {...register("verified")}
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="code"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            User code
+          </label>
+          <input
+            disabled={user && true}
+            type="text"
+            id="code"
+            className={`${user && 'disabled:text-gray-100/20'} bg-[#07070729] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring focus:outline-none  dark:focus:ring-primary dark:focus:border-primary`}
+            placeholder="usr-012"
+            {...register("code")}
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="password"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Password
+          </label>
+          <input
+            disabled={user && true}
+            type="text"
+            id="password"
+            className={`${user && 'disabled:text-gray-100/20'} bg-[#07070729] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring focus:outline-none  dark:focus:ring-primary dark:focus:border-primary`}
+            placeholder="********"
+            {...register("password")}
+          />
+        </div>
         <div className="sm:col-span-2">
           <div
             {...getRootProps()}

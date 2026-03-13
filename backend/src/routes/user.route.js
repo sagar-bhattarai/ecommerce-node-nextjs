@@ -34,10 +34,6 @@ router.get("/logout", auth, logoutUser);
 */
 router.get("/", auth, roleBasedAuth(ADMIN), getAllUsers);
 /** 
- * PUT /api/users/update
-*/
-router.put("/update", upload.single('profileImage'), auth, updateUser);
-/** 
  * GET /api/users/deactive
 */
 router.get("/deactive", auth, deactivateUser);
@@ -54,13 +50,18 @@ router.get("/send-otp", auth, sendOtp);
 */
 router.get("/verify-email", auth, verifyEmail);
 /** 
+ * GET /api/users/user/:id
+*/
+router.get("/user/:id", auth, roleBasedAuth(ADMIN), getUserById);
+/** 
+ * PUT /api/users/update/:id
+*/
+router.patch("/update/:id", upload.single('profileImage'), auth, roleBasedAuth(ADMIN), updateUser);
+/** 
  * PUT /api/users/update-user-role/:id
 */
 router.put("/update-user-role/:id", auth, roleBasedAuth(ADMIN), updateUserRole);
-/** 
- * GET /api/Users/User/:id
-*/
-router.get("/User/:id", auth, roleBasedAuth(ADMIN), getUserById);
+
 
 
 export default router

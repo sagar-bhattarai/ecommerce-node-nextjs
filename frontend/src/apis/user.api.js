@@ -2,7 +2,6 @@ import axios from "axios";
 import config from "@/config/config";
 
 /*    suggestion from Ai */
-
 export const fetchAllUsers = async (searchParams) => {
     const sort = searchParams?.sort ?? "";
     const min = searchParams?.min ?? "";
@@ -32,20 +31,14 @@ export const addUser = async (data) => {
     return response.data.result.data;
 };
 
-// export const fetchAllUsers = async (searchParams) => {
-//     const sort = (await searchParams)?.sort ?? ""
-//     const min = (await searchParams)?.min ?? ""
-//     const max = (await searchParams)?.max ?? ""
-//     const category = (await searchParams)?.category ?? ""
-//     const brands = (await searchParams)?.brands ?? ""
-//     const name = (await searchParams)?.name ?? ""
-
-//     const response = await axios.get(`${config.apiUrl}/users?sort=${sort}&min=${min}&max=${max}&category=${category}&brands=${brands}&name=${name}`);
-//     return response.data.result.data;
-// };
-
-export const getUserById = async (id) => {
-    const response = await axios.get(`${config.apiUrl}/users/user/${id}`);
+export const getUserById = async ({id}) => {
+    const authToken = localStorage.getItem("accessToken");
+    const response = await axios.get(`${config.apiUrl}/users/user/${id}`,
+        {
+            headers: {
+                Authorization: `Bearer ${authToken}`,
+            },
+        })
     return response.data;
 };
 
@@ -62,5 +55,5 @@ export const updateUser = async (id, data) => {
         },
     );
 
-    return response.data.result.data;
+    return response.data.data;
 };

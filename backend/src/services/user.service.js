@@ -14,7 +14,8 @@ const single = async (id) => {
 }
 
 const edit = async (req) => {
-    const user = await UserModel.findById(req.user._id);
+
+    const user = await UserModel.findById(req.params.id);
 
     if (!user) {
         throw {
@@ -23,18 +24,21 @@ const edit = async (req) => {
         };
     }
 
-    let url = await uploadImage(req);
+    let url = await uploadImage(req.body?.profileImage);
     if (!url) {
         url = user.profileImage;
     }
 
     const data = {
-        userName: req.body.userName || user.userName,
-        userAddress: req.body.userAddress || user.userAddress,
-        profileImage: url,
+        userName: req.body.userName ?? user.userName,
+        userAddress: req.body.userAddress ?? user.userAddress,
+        userRoles: req.body.userRoles ?? user.userRoles,
+        isActive: req.body.isActive ?? user.isActive,
+        isEmailVerified: req.body.isEmailVerified ?? user.isEmailVerified,
+        profileImage: url ?? "",
     }
 
-    return await UserModel.findByIdAndUpdate(req.user._id, data, { new: true }).select("-userPassword -refreshToken -createdAt -updatedAt -__v");
+    return await UserModel.findByIdAndUpdate(req.params.id, data, { new: true }).select("-userPassword -refreshToken -createdAt -updatedAt -__v");
 }
 
 const deactivate = async (req) => {

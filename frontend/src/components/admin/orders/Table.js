@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link"
-import user_placeholder from "../../../../public/user_placeholder.png";
+import order_placeholder from "../../../../public/order_placeholder.jpg";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 
-const ProductTable = ({ users }) => {
+const ProductTable = ({ orders }) => {
 
     return (
         <div>
@@ -23,22 +23,25 @@ const ProductTable = ({ users }) => {
                             </div>
                         </th>
                         <th scope="col" className="px-4 py-3">
-                            Users
+                            Orders 
+                        </th>                        
+                        <th scope="col" className="px-4 py-3">
+                             Customer
                         </th>
                         <th scope="col" className="px-4 py-3">
-                            Roles
+                            Order Number 
                         </th>
                         <th scope="col" className="px-4 py-3">
-                            Active
+                            Order Status
                         </th>
                         <th scope="col" className="px-4 py-3">
-                            Email Verified
+                            Payment
                         </th>
                         <th scope="col" className="px-4 py-3">
-                            Email
+                            Grand Total
                         </th>
                         <th scope="col" className="px-4 py-3">
-                            Address
+                            Created At
                         </th>
                         <th scope="col" className="px-4 py-3">
                             Actions
@@ -46,8 +49,8 @@ const ProductTable = ({ users }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map((user) => (
-                        <tr key={user._id} className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    {orders.map((order) => (
+                        <tr key={order?._id} className="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
                             <td className="w-4 px-4 py-3">
                                 <div className="flex items-center">
                                     <input
@@ -66,47 +69,46 @@ const ProductTable = ({ users }) => {
                                 className="flex items-center px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                             >
                                 <Image
-                                    src={!user.image ? user_placeholder : user.image}
-                                    alt={user.userName}
+                                    src={!order?.image ? order_placeholder : order?.image}
+                                    alt={order?.orderName}
                                     className="w-8 h-8 mr-3 object-cover"
                                     height={100}
                                     width={100}
                                 />
-                                {user.userName}
+                                    {order?.items?.map((item)=>( item + ", " ))}
                             </th>
                             <td className="px-4 py-2">
                                 <span className="bg-primary-100 text-primary-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">
-                                    {user.userRoles.map((role)=>( role + ", " ))}
+                                {order?.customerId}
                                 </span>
                             </td>
                             <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                 <div className="flex items-center ml-4">
-                                    <div className={`inline-block w-4 h-4 rounded-full
-                                        ${(!user.isActive) && "bg-red-700"} 
-                                        ${(user.isActive) && "bg-green-700"} `}></div>
-                                    {/* {user.isActive ? "true" : "false"} */}
+                                    {order?.orderNumber }
                                 </div>
                             </td>                           
                              <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                 <div className="flex items-center ml-4">
-                                    <div className={`inline-block w-4 h-4 rounded-full
-                                        ${(!user.isEmailVerified) && "bg-red-700"} 
-                                        ${(user.isEmailVerified) && "bg-green-700"} `}></div>
-                                    {/* {user.isEmailVerified ? "true" : "false"} */}
+                                    <div className={`inline-block w-4 h-4 rounded-full mr-1
+                                        ${(!order?.orderStatus) && "bg-red-700"} 
+                                        ${(order?.orderStatus == "ECOM___PAID") && "bg-green-700"} `}></div> {order?.orderStatus}
                                 </div>
+                            </td>                           
+                             <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {order?.payment}
                             </td>
                             <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                {user.userEmail}
+                                {order?.grandTotal}
                             </td>
                             <td className="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                {user.userAddress}
+                                {order?.createdAt}
                             </td>
 
                             <td className="flex justify-center items-center px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                <Link className="mr-2 hover:text-yellow-700 cursor-pointer" href={`/user-management/edit/${user._id}`}>
+                                <Link className="mr-2 hover:text-yellow-700 cursor-pointer" href={`/order-management/edit/${order?._id}`}>
                                     <FaPencilAlt />
                                 </Link>
-                                <Link className="hover:text-red-600 cursor-pointer" href={"/user-management/add"}>
+                                <Link className="hover:text-red-600 cursor-pointer" href={"/order-management/add"}>
                                     <FaTrash />
                                 </Link>
                             </td>

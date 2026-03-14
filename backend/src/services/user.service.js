@@ -29,6 +29,7 @@ const edit = async (req) => {
         url = user.profileImage;
     }
 
+    console.log(" req.body.userRoles", req.body.userRoles)
     const data = {
         userName: req.body.userName ?? user.userName,
         userAddress: req.body.userAddress ?? user.userAddress,

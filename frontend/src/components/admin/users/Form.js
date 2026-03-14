@@ -70,12 +70,17 @@ const UserForm = (id) => {
   };
 
   const submitForm = (data) => {
+    console.log("data",data)
     setLoading(true);
     const formData = new FormData();
 
     formData.append("userName", data.name);
     formData.append("userAddress", data?.address);
-    formData.append("userRoles", data?.roles);
+    const roles = data?.roles[0].split(",").map(role => role.trim());
+    roles.forEach(role => {
+      formData.append("userRoles[]", role);
+    });
+    // formData.append("userRoles", data?.roles);
     formData.append("isActive", data?.active);
     formData.append("isEmailVerified", data?.verified);
 
@@ -179,7 +184,7 @@ const UserForm = (id) => {
             type="text"
             id="roles"
             className="bg-[#07070729] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white  focus:ring focus:outline-none  dark:focus:ring-primary dark:focus:border-primary"
-            placeholder="user roles"
+            placeholder="CUSTOMER,MERCHANT"
             required
             {...register("roles")}
           />
